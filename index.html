@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Alegría — Negocios Ganaderos</title>
+    <meta name="theme-color" content="#0f2d52">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', 'Segoe UI', sans-serif;
+            background: #0f2d52;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Fondo con círculos sutiles */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            border: 1px solid rgba(58, 125, 68, 0.08);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        body::after {
+            content: '';
+            position: absolute;
+            width: 900px;
+            height: 900px;
+            border-radius: 50%;
+            border: 1px solid rgba(58, 125, 68, 0.05);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .hero {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        /* Línea decorativa */
+        .linea {
+            width: 48px;
+            height: 4px;
+            background: #3a7d44;
+            border-radius: 4px;
+            margin-bottom: 36px;
+            opacity: 0.7;
+        }
+
+        /* Nombre principal */
+        .nombre {
+            font-size: clamp(3.2em, 12vw, 7em);
+            font-weight: 900;
+            color: #3a7d44;
+            letter-spacing: 0.04em;
+            line-height: 1;
+            text-shadow: 0 2px 32px rgba(58,125,68,0.25);
+        }
+
+        .subtitulo {
+            font-size: clamp(0.85em, 3vw, 1.15em);
+            font-weight: 700;
+            color: rgba(255,255,255,0.45);
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            margin-top: 10px;
+            margin-bottom: 56px;
+        }
+
+        /* Píldora */
+        .btn-entrar {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #3a7d44;
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 18px 48px;
+            border-radius: 100px;
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 8px 32px rgba(58,125,68,0.35);
+        }
+        .btn-entrar:hover {
+            background: #2c5e34;
+            transform: translateY(-3px);
+            box-shadow: 0 14px 40px rgba(58,125,68,0.45);
+        }
+        .btn-entrar:active {
+            transform: translateY(0);
+        }
+        .btn-entrar .flecha {
+            font-size: 1.1em;
+            transition: transform 0.2s;
+        }
+        .btn-entrar:hover .flecha {
+            transform: translateX(4px);
+        }
+
+        /* Footer mínimo */
+        .footer {
+            position: absolute;
+            bottom: 28px;
+            font-size: 0.72em;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <div class="linea"></div>
+        <div class="nombre">LA ALEGRÍA</div>
+        <div class="subtitulo">Negocios Ganaderos</div>
+        <a class="btn-entrar" href="registro.html">
+            Entrar <span class="flecha">&#8594;</span>
+        </a>
+    </div>
+
+    <div class="footer">© La Alegría Sociedad Ganadera</div>
+
+</body>
+</html>
