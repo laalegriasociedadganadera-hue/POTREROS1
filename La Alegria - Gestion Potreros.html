@@ -1315,7 +1315,7 @@
  </div>
  <div style="display:flex;gap:8px;flex-wrap:wrap">
  <button onclick="purgarAuditoriaAdmin()" style="background:#dc2626;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.88em"><i data-lucide="trash-2" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Borrar todo el registro ahora</button>
- <button onclick="toggleConfigAuditoria()" class="btn-x-cerrar-inline" title="Cerrar"></button>
+ <button onclick="toggleConfigAuditoria()" class="btn-x-cerrar-inline" title="Cerrar">&#x2715;</button>
  </div>
  </div>
 
@@ -1488,7 +1488,7 @@
  </div>
 <div id="modal-nuevo-trabajador" onclick="if(event.target===this)cerrarModalNuevoTrabajador()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10000;align-items:center;justify-content:center;padding:20px">
  <div style="background:white;border-radius:16px;padding:28px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative">
- <button onclick="cerrarModalNuevoTrabajador()" class="btn-x-cerrar" title="Cerrar"></button>
+ <button onclick="cerrarModalNuevoTrabajador()" class="btn-x-cerrar" title="Cerrar">&#x2715;</button>
  <h3 style="margin-bottom:18px;color:var(--azul);font-size:1.2em"><i data-lucide="user-plus" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Nuevo Trabajador</h3>
  <label style="display:block;font-size:0.9em;color:#555;margin-bottom:6px;font-weight:600">Nombre del trabajador</label>
  <input type="text" id="input-nuevo-trabajador"
@@ -1519,7 +1519,7 @@
 <!-- Modal acciones masivas -->
 <div id="modal-masivo" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:10002;align-items:center;justify-content:center;padding:16px">
  <div style="background:white;border-radius:18px;padding:28px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative">
- <button onclick="document.getElementById('modal-masivo').style.display='none'" class="btn-x-cerrar"></button>
+ <button onclick="document.getElementById('modal-masivo').style.display='none'" class="btn-x-cerrar">&#x2715;</button>
  <h3 id="modal-masivo-titulo" style="color:var(--azul);font-size:1.2em;margin-bottom:16px;padding-right:32px"></h3>
  <div id="modal-masivo-cuerpo"></div>
  <button id="modal-masivo-confirmar" style="width:100%;margin-top:18px;background:var(--verde);color:white;border:none;padding:14px;border-radius:10px;cursor:pointer;font-weight:700;font-size:1.05em"> Confirmar</button>
@@ -1571,6 +1571,7 @@
  cargarTrabajadoresRrhh();
  cargarPlanoGuardado();
  cargarCaravanas(); // inicializa caravanas y sus selects de potrero
+ lucide.createIcons();
  });
 
  function cargarPotrerosGuardados() {
@@ -1967,6 +1968,7 @@
  if(tabId === 'historial') renderizarHistorial();
  if(tabId === 'rrhh') cargarTrabajadoresRrhh();
  if(tabId === 'caravanas') { renderizarCaravanas(); actualizarSelectoresPotreroCaravanas(); }
+ lucide.createIcons();
  }
 
  function toggleMenu() {
@@ -2902,7 +2904,7 @@ function abrirPlano() {
  <input type="file" accept=".kmz,.kml" multiple onchange="cargarKMZ(event)" style="display:none">
  </label>
  <button onclick="limpiarTodasCapas()" style="background:#dc2626;color:white;border:none;padding:13px 18px;border-radius:10px;cursor:pointer;font-weight:700;font-size:1em;min-height:50px"><i data-lucide="trash-2" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Limpiar todo</button>
- <button onclick="cerrarPlano()" class="btn-x-cerrar-inline" title="Cerrar"></button>
+ <button onclick="cerrarPlano()" class="btn-x-cerrar-inline" title="Cerrar">&#x2715;</button>
  </div>
  </div>
  <div id="lista-kmz" style="display:none;background:rgba(0,0,0,0.4);border-radius:10px;margin:6px 4px;padding:10px 14px;max-height:140px;overflow-y:auto"></div>
@@ -3819,7 +3821,7 @@ function abrirEditarLote(grupoId) {
  modal.style.display = 'flex';
  modal.innerHTML = `
  <div style="background:white;border-radius:18px;padding:28px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;max-height:90vh;overflow-y:auto">
- <button onclick="cerrarEditarLote()" class="btn-x-cerrar" title="Cerrar"></button>
+ <button onclick="cerrarEditarLote()" class="btn-x-cerrar" title="Cerrar">&#x2715;</button>
  <h3 style="color:var(--azul);font-size:1.2em;margin-bottom:20px;padding-right:32px"> Editar lote: ${g.nombre}</h3>
 
  <div style="display:flex;flex-direction:column;gap:14px">
@@ -3962,7 +3964,7 @@ function abrirSacarCaravana(ide, grupoId) {
  modal.style.display = 'flex';
  modal.innerHTML = `
  <div style="background:white;border-radius:18px;padding:28px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative">
- <button onclick="cerrarSacarCaravana()" class="btn-x-cerrar" title="Cerrar"></button>
+ <button onclick="cerrarSacarCaravana()" class="btn-x-cerrar" title="Cerrar">&#x2715;</button>
  <h3 style="color:var(--azul);font-size:1.2em;margin-bottom:6px;padding-right:32px"> Sacar del grupo</h3>
  <p style="color:#64748b;font-size:0.95em;margin-bottom:20px">Caravana <strong>${ide}</strong> — Lote: <em>${g.nombre}</em></p>
 
