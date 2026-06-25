@@ -2886,8 +2886,44 @@ function toggleGastosConcepto() {
  
 // ===== PLANO / MAPA DE POTREROS (KMZ) =====
 let mapaPlano = null;
-let capasKMZ = []; // array de { nombre, geojson, capa, marcadores, sinMatch }
-let geojsonPotreros = null; // compatibilidad con cargarPlanoGuardado
+let capasKMZ = [];
+let geojsonPotreros = null;
+let esAdminPlano = false;
+
+// PIN de administrador del plano (cambiar según necesidad)
+const ADMIN_PIN_PLANO = '2810';
+
+// KMZ precargados desde /kmz/
+const KMZ_ARCHIVOS = [
+ 'Australiano','Campo arriba','Costa','Feliciano','Laguna',
+ 'Lecheras','Mako','Molino','Peppa',
+ 'Potrero1','Potrero2','Potrero3','Potrero4','Potrero5','Potrero6',
+ 'Pradera alegría','Pradera frente','PRV','Túnel'
+];
+
+function toggleAdminPlano() {
+ if (esAdminPlano) {
+ esAdminPlano = false;
+ actualizarBotonesAdminPlano();
+ mostrarToast('Modo admin desactivado');
+ return;
+ }
+ const pin = prompt('PIN de administrador:');
+ if (pin === ADMIN_PIN_PLANO) {
+ esAdminPlano = true;
+ actualizarBotonesAdminPlano();
+ mostrarToast('Modo admin activado');
+ } else if (pin !== null) {
+ mostrarToast('PIN incorrecto', 'error');
+ }
+}
+
+function actualizarBotonesAdminPlano() {
+ const bAdmin = document.getElementById('plano-btns-admin');
+ if (bAdmin) bAdmin.style.display = esAdminPlano ? 'flex' : 'none';
+ const btnPin = document.getElementById('btn-admin-plano');
+ if (btnPin) btnPin.title = esAdminPlano ? 'Desactivar admin' : 'Acceso admin';
+}
 
 function abrirPlano() {
  let modal = document.getElementById('modal-plano');
@@ -2897,13 +2933,18 @@ function abrirPlano() {
  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:10000;display:flex;flex-direction:column;padding:10px';
  modal.innerHTML = `
  <div style="display:flex;justify-content:space-between;align-items:center;color:white;padding:14px 16px;gap:10px;flex-wrap:wrap;background:var(--azul-osc);border-radius:12px 12px 0 0">
- <h2 style="margin:0;font-size:1.3em;font-weight:800"> Plano de Potreros</h2>
+ <h2 style="margin:0;font-size:1.3em;font-weight:800">Plano de Potreros</h2>
  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+ <div id="plano-btns-admin" style="display:none;gap:10px;flex-wrap:wrap;align-items:center">
  <label style="background:var(--verde);color:white;padding:13px 18px;border-radius:10px;cursor:pointer;font-weight:700;font-size:1em;min-height:50px;display:flex;align-items:center;gap:6px">
- Cargar KMZ(s)
+ Cargar KMZ
  <input type="file" accept=".kmz,.kml" multiple onchange="cargarKMZ(event)" style="display:none">
  </label>
- <button onclick="limpiarTodasCapas()" style="background:#dc2626;color:white;border:none;padding:13px 18px;border-radius:10px;cursor:pointer;font-weight:700;font-size:1em;min-height:50px"><i data-lucide="trash-2" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Limpiar todo</button>
+ <button onclick="limpiarTodasCapas()" style="background:#dc2626;color:white;border:none;padding:13px 18px;border-radius:10px;cursor:pointer;font-weight:700;font-size:1em;min-height:50px">Limpiar todo</button>
+ </div>
+ <button id="btn-admin-plano" onclick="toggleAdminPlano()" title="Acceso admin" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.15);width:40px;height:40px;border-radius:8px;cursor:pointer;font-size:0.85em;display:flex;align-items:center;justify-content:center">
+ <i data-lucide="lock" style="width:16px;height:16px"></i>
+ </button>
  <button onclick="cerrarPlano()" class="btn-x-cerrar-inline" title="Cerrar">&#x2715;</button>
  </div>
  </div>
@@ -2915,33 +2956,60 @@ function abrirPlano() {
  } else {
  modal.style.display = 'flex';
  }
+ actualizarBotonesAdminPlano();
 
- setTimeout(() => {
+ setTimeout(async () => {
  if (typeof L === 'undefined') {
  document.getElementById('mapa-plano').innerHTML =
- '<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:30px;text-align:center;color:#666"> El mapa necesita conexión a internet para cargar. Conectate y volvé a abrir el plano.</div>';
- const info = document.getElementById('plano-info');
- if (info) info.textContent = 'Sin conexión: el mapa no pudo cargarse.';
+ '<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:30px;text-align:center;color:#666">El mapa necesita conexión a internet.</div>';
  return;
  }
  if (!mapaPlano) {
  mapaPlano = L.map('mapa-plano').setView([-32.37, -54.17], 13);
  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
- maxZoom: 19,
- attribution: '© OpenStreetMap'
+ maxZoom: 19, attribution: '© OpenStreetMap'
  }).addTo(mapaPlano);
  }
  mapaPlano.invalidateSize();
- if (capasKMZ.length) {
+ lucide.createIcons();
+
+ if (!capasKMZ.length) {
+ await autoCargarKMZ();
+ } else {
  capasKMZ.forEach(c => dibujarCapa(c));
  actualizarListaKMZ();
  ajustarVistaTotalCapas();
- } else if (geojsonPotreros) {
- dibujarPotreros(geojsonPotreros);
- } else {
- mostrarPlaceholderPlano();
  }
  }, 300);
+}
+
+async function autoCargarKMZ() {
+ const info = document.getElementById('plano-info');
+ if (info) info.textContent = 'Cargando potreros...';
+ let cargados = 0;
+ for (const nombre of KMZ_ARCHIVOS) {
+ try {
+ const url = `./kmz/${encodeURIComponent(nombre)}.kmz`;
+ const resp = await fetch(url);
+ if (!resp.ok) continue;
+ const buf = await resp.arrayBuffer();
+ const zip = await JSZip.loadAsync(buf);
+ const kmlFile = Object.values(zip.files).find(f => f.name.toLowerCase().endsWith('.kml'));
+ if (!kmlFile) continue;
+ const kmlText = await kmlFile.async('string');
+ const parser = new DOMParser();
+ const kmlDoc = parser.parseFromString(kmlText, 'text/xml');
+ const geojson = toGeoJSON.kml(kmlDoc);
+ await procesarGeojsonKMZ(nombre + '.kmz', geojson);
+ cargados++;
+ } catch(e) {}
+ }
+ if (cargados > 0) {
+ ajustarVistaTotalCapas();
+ if (info) info.textContent = `${cargados} potreros cargados`;
+ } else {
+ if (info) info.textContent = 'No se encontraron archivos KMZ.';
+ }
 }
 
 function cerrarPlano() {
@@ -2950,44 +3018,13 @@ function cerrarPlano() {
 }
 
 function mostrarPlaceholderPlano() {
- document.getElementById('plano-info').innerHTML =
- ' Sin plano cargado. Tocá <strong> Cargar KMZ</strong> y elegí el archivo de Google Earth con los potreros.';
+ const el = document.getElementById('plano-info');
+ if (el) el.textContent = 'Cargando plano...';
 }
 
-async function cargarKMZ(event) {
- const files = Array.from(event.target.files);
- if (!files.length) return;
- const info = document.getElementById('plano-info');
- info.textContent = ` Procesando ${files.length} archivo(s)...`;
-
- if (typeof JSZip === 'undefined' || typeof toGeoJSON === 'undefined') {
- info.textContent = ' Faltan librerías (necesita internet). Conectate y reintentá.';
- return;
- }
-
- const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[._\-]/g,' ').replace(/\s+/g,' ').trim();
- let cargados = 0, errores = [];
-
- for (const file of files) {
- if (capasKMZ.find(c => c.nombre === file.name)) {
- errores.push(`"${file.name}" ya estaba cargado, se omitió`);
- continue;
- }
- try {
- let kmlText;
- if (file.name.toLowerCase().endsWith('.kmz')) {
- const zip = await JSZip.loadAsync(file);
- const kmlFile = Object.keys(zip.files).find(n => n.toLowerCase().endsWith('.kml'));
- if (!kmlFile) throw new Error('No se encontró archivo KML dentro del KMZ');
- kmlText = await zip.files[kmlFile].async('text');
- } else {
- kmlText = await file.text();
- }
-
- const parser = new DOMParser();
- const kmlDom = parser.parseFromString(kmlText, 'text/xml');
- const geojson = toGeoJSON.kml(kmlDom);
-
+// Procesa un geojson ya parseado y lo agrega a capasKMZ
+async function procesarGeojsonKMZ(nombre, geojson) {
+ const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[._\-]/g,' ').replace(/\s+/g,' ').trim();
  const nombresApp = potreros.map(p => norm(p.nombre));
  const sinMatch = [];
  geojson.features.forEach(f => {
@@ -2998,27 +3035,47 @@ async function cargarKMZ(event) {
  sinMatch.push(nom);
  }
  });
-
- const entrada = { nombre: file.name, geojson, capa: null, marcadores: [], sinMatch };
+ const entrada = { nombre, geojson, capa: null, marcadores: [], sinMatch };
  capasKMZ.push(entrada);
  dibujarCapa(entrada);
+ actualizarListaKMZ();
+}
+
+async function cargarKMZ(event) {
+ const files = Array.from(event.target.files);
+ if (!files.length) return;
+ const info = document.getElementById('plano-info');
+ info.textContent = `Procesando ${files.length} archivo(s)...`;
+ if (typeof JSZip === 'undefined' || typeof toGeoJSON === 'undefined') {
+ info.textContent = 'Faltan librerias (necesita internet).';
+ return;
+ }
+ let cargados = 0, errores = [];
+ for (const file of files) {
+ if (capasKMZ.find(c => c.nombre === file.name)) continue;
+ try {
+ let kmlText;
+ if (file.name.toLowerCase().endsWith('.kmz')) {
+ const zip = await JSZip.loadAsync(file);
+ const kmlFile = Object.keys(zip.files).find(n => n.toLowerCase().endsWith('.kml'));
+ if (!kmlFile) throw new Error('Sin KML dentro del KMZ');
+ kmlText = await zip.files[kmlFile].async('text');
+ } else {
+ kmlText = await file.text();
+ }
+ const geojson = toGeoJSON.kml(new DOMParser().parseFromString(kmlText, 'text/xml'));
+ await procesarGeojsonKMZ(file.name, geojson);
  cargados++;
  } catch (err) {
  errores.push(`"${file.name}": ${err.message}`);
  }
  }
-
  guardarCapasLocalStorage();
- actualizarListaKMZ();
  ajustarVistaTotalCapas();
-
- let msg = '';
- if (cargados) msg += ` ${cargados} archivo(s) cargado(s). `;
- if (errores.length) msg += ` ${errores.join(' | ')}`;
- info.textContent = msg || ' Listo';
-
+ info.textContent = cargados ? `${cargados} archivo(s) cargado(s).` : errores.join(' | ');
  event.target.value = '';
 }
+
 
 // Dibuja una capa individual sobre el mapa
 function dibujarCapa(entrada) {
