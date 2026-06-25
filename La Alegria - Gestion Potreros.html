@@ -1114,21 +1114,21 @@
 
  <div class="menu-bar" style="justify-content:space-between;">
  <button class="menu-toggle" onclick="toggleMenu()"><span class="label-menu">Menú</span></button>
- <button class="btn-busqueda" id="btnBusqueda" onclick="toggleBusqueda()" title="Buscar"><i data-lucide="search" style="width:18px;height:18px;vertical-align:middle;flex-shrink:0"></i> </button>
+ <button class="btn-busqueda" id="btnBusqueda" onclick="toggleBusqueda()" title="Buscar"><i data-lucide="search" style="width:22px;height:22px;vertical-align:middle;flex-shrink:0"></i> </button>
  </div>
  <div class="titulo-seccion" id="menu-titulo">Potreros</div>
 
  <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
  <div class="nav-tabs" id="nav-tabs">
- <button class="nav-tab active" onclick="showTab('tabla')"><i data-lucide="layout-list" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Potreros</button>
- <button class="nav-tab" onclick="showTab('dashboard')"><i data-lucide="bar-chart-2" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Gráficos y Resumen</button>
- <button class="nav-tab" onclick="showTab('mapa')"><i data-lucide="map" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Mapa de Calor</button>
- <button class="nav-tab" onclick="cerrarMenu(); abrirPlano()"><i data-lucide="map-pin" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Ver Plano (KMZ)</button>
- <button class="nav-tab" onclick="showTab('inventario')"><i data-lucide="table" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Inventario (Excel)</button>
- <button class="nav-tab" onclick="showTab('actividades')"><i data-lucide="clipboard-list" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Registro de Actividades</button>
- <button class="nav-tab" onclick="showTab('reportes')"><i data-lucide="trending-up" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Reportes</button>
- <button class="nav-tab" onclick="showTab('rrhh')"><i data-lucide="briefcase" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> RRHH / Gastos</button>
- <button class="nav-tab" onclick="showTab('caravanas')"><i data-lucide="tag" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Caravanas</button>
+ <button class="nav-tab active" onclick="showTab('tabla')"><i data-lucide="layout-list" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Potreros</button>
+ <button class="nav-tab" onclick="showTab('dashboard')"><i data-lucide="bar-chart-2" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Gráficos y Resumen</button>
+ <button class="nav-tab" onclick="showTab('mapa')"><i data-lucide="map" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Mapa de Calor</button>
+ <button class="nav-tab" onclick="cerrarMenu(); abrirPlano()"><i data-lucide="map-pin" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Ver Plano (KMZ)</button>
+ <button class="nav-tab" onclick="showTab('inventario')"><i data-lucide="table" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Inventario (Excel)</button>
+ <button class="nav-tab" onclick="showTab('actividades')"><i data-lucide="clipboard-list" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Registro de Actividades</button>
+ <button class="nav-tab" onclick="showTab('reportes')"><i data-lucide="trending-up" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Reportes</button>
+ <button class="nav-tab" onclick="showTab('rrhh')"><i data-lucide="briefcase" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> RRHH / Gastos</button>
+ <button class="nav-tab" onclick="showTab('caravanas')"><i data-lucide="tag" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Caravanas</button>
  </div>
 
  <!-- ===== BÚSQUEDA GLOBAL (desplegable) ===== -->
@@ -1167,13 +1167,13 @@
 
  <div class="charts-grid">
  <div class="card">
- <h2><i data-lucide="pie-chart" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Distribución por Categoría</h2>
+ <h2><i data-lucide="pie-chart" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Distribución por Categoría</h2>
  <div class="chart-container">
  <canvas id="chartCategorias"></canvas>
  </div>
  </div>
  <div class="card">
- <h2><i data-lucide="bar-chart-2" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Animales por Potrero</h2>
+ <h2><i data-lucide="bar-chart-2" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Animales por Potrero</h2>
  <div class="chart-container">
  <canvas id="chartPotreros"></canvas>
  </div>
@@ -1185,16 +1185,16 @@
  <div id="tabla" class="tab-content fade-in">
  <!-- Ingreso rápido -->
  <div class="ingreso-rapido">
- <h2><i data-lucide="zap" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Ingreso Rápido</h2>
+ <h2><i data-lucide="zap" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Ingreso Rápido</h2>
  <div class="ingreso-form">
  <div>
- <label for="selPotrero"><i data-lucide="map-pin" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Potrero</label>
+ <label for="selPotrero"><i data-lucide="map-pin" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Potrero</label>
  <select id="selPotrero">
  <option value="">Seleccionar...</option>
  </select>
  </div>
  <div>
- <label for="selTipo"><i data-lucide="tag" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Tipo de Animal</label>
+ <label for="selTipo"><i data-lucide="tag" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Tipo de Animal</label>
  <select id="selTipo">
  <option value="">Seleccionar...</option>
  <option value="toros">Toros</option>
@@ -1211,11 +1211,11 @@
  </select>
  </div>
  <div>
- <label for="inpCantidad"><i data-lucide="hash" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Cantidad</label>
+ <label for="inpCantidad"><i data-lucide="hash" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Cantidad</label>
  <input type="number" id="inpCantidad" min="0" placeholder="0" onkeydown="if(event.key==='Enter')agregarRapido()">
  </div>
  <div>
- <label for="selOperacion"><i data-lucide="settings-2" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Operación</label>
+ <label for="selOperacion"><i data-lucide="settings-2" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Operación</label>
  <select id="selOperacion">
  <option value="sumar">+ Agregar</option>
  <option value="restar"> Restar</option>
@@ -1223,7 +1223,7 @@
  </select>
  </div>
  <button class="btn-ingresar" onclick="agregarRapido()">
- <span><i data-lucide="check" style="width:18px;height:18px;vertical-align:middle;flex-shrink:0"></i> </span>CARGAR
+ <span><i data-lucide="check" style="width:22px;height:22px;vertical-align:middle;flex-shrink:0"></i> </span>CARGAR
  </button>
  </div>
  </div>
@@ -1241,11 +1241,11 @@
  <!-- INVENTARIO EXCEL (escondido, para imprimir) -->
  <div id="inventario" class="tab-content hidden">
  <div class="card">
- <h2><i data-lucide="table" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Inventario Completo (vista Excel)</h2>
+ <h2><i data-lucide="table" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Inventario Completo (vista Excel)</h2>
  <p style="margin-bottom:10px;color:#666">Vista de tabla para imprimir o exportar.</p>
  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px" class="no-print">
- <button class="btn btn-success" onclick="exportarExcelInventario()"><i data-lucide="file-spreadsheet" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Exportar a Excel</button>
- <button class="btn btn-primary" onclick="imprimirInventario()"><i data-lucide="printer" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Imprimir / PDF</button>
+ <button class="btn btn-success" onclick="exportarExcelInventario()"><i data-lucide="file-spreadsheet" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Exportar a Excel</button>
+ <button class="btn btn-primary" onclick="imprimirInventario()"><i data-lucide="printer" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Imprimir / PDF</button>
  </div>
  <div class="table-container" style="overflow-x:auto">
  <table id="tablaInventario" style="width:100%;border-collapse:collapse">
@@ -1277,7 +1277,7 @@
  <!-- MAPA DE CALOR -->
  <div id="mapa" class="tab-content hidden">
  <div class="card">
- <h2><i data-lucide="map" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Densidad de Carga por Potrero</h2>
+ <h2><i data-lucide="map" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Densidad de Carga por Potrero</h2>
  <p style="margin-bottom:15px;color:#666">Color intenso = mayor densidad de animales por hectárea</p>
  <div class="heatmap" id="heatmapContainer"></div>
  </div>
@@ -1288,7 +1288,7 @@
  <div class="card">
  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px">
  <div>
- <h2 style="margin:0 0 4px"><i data-lucide="clipboard-list" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Registro de Actividades</h2>
+ <h2 style="margin:0 0 4px"><i data-lucide="clipboard-list" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Registro de Actividades</h2>
  <p style="color:#666;font-size:0.88em;margin:0">
  Auditoría inmutable — cada acción queda registrada permanentemente.
  <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:6px;font-size:0.82em;font-weight:600;margin-left:4px">
@@ -1314,7 +1314,7 @@
  </select>
  </div>
  <div style="display:flex;gap:8px;flex-wrap:wrap">
- <button onclick="purgarAuditoriaAdmin()" style="background:#dc2626;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.88em"><i data-lucide="trash-2" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Borrar todo el registro ahora</button>
+ <button onclick="purgarAuditoriaAdmin()" style="background:#dc2626;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.88em"><i data-lucide="trash-2" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Borrar todo el registro ahora</button>
  <button onclick="toggleConfigAuditoria()" class="btn-x-cerrar-inline" title="Cerrar">&#x2715;</button>
  </div>
  </div>
@@ -1346,12 +1346,12 @@
  <!-- REPORTES -->
  <div id="reportes" class="tab-content hidden">
  <div class="card">
- <h2><i data-lucide="download" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Exportar Reportes</h2>
+ <h2><i data-lucide="download" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Exportar Reportes</h2>
  <div class="export-buttons">
- <button class="btn btn-success" onclick="exportarExcelInventario()"><i data-lucide="file-spreadsheet" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Exportar a Excel</button>
- <button class="btn btn-primary" onclick="exportarCSV()"><i data-lucide="file-text" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Exportar CSV</button>
- <button class="btn btn-primary" onclick="exportarJSON()"><i data-lucide="file-code" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Exportar JSON</button>
- <button class="btn btn-success" onclick="imprimirInventario()"><i data-lucide="printer" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Imprimir / PDF</button>
+ <button class="btn btn-success" onclick="exportarExcelInventario()"><i data-lucide="file-spreadsheet" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Exportar a Excel</button>
+ <button class="btn btn-primary" onclick="exportarCSV()"><i data-lucide="file-text" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Exportar CSV</button>
+ <button class="btn btn-primary" onclick="exportarJSON()"><i data-lucide="file-code" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Exportar JSON</button>
+ <button class="btn btn-success" onclick="imprimirInventario()"><i data-lucide="printer" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Imprimir / PDF</button>
  </div>
  <div id="reportePreview" style="margin-top:20px"></div>
  </div>
@@ -1363,9 +1363,9 @@
  <!-- RRHH - REFACTORIZADO -->
  <div id="rrhh" class="tab-content hidden">
  <div class="card">
- <h2><i data-lucide="users" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Gestión RRHH</h2>
+ <h2><i data-lucide="users" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Gestión RRHH</h2>
  <button onclick="agregarTrabajadorRrhh()" style="width:100%;background:var(--verde);color:white;border:none;padding:15px;border-radius:10px;font-weight:bold;margin-bottom:20px;cursor:pointer;font-size:1.1em;display:flex;align-items:center;justify-content:center;gap:8px">
- <i data-lucide="user-plus" style="width:18px;height:18px"></i> Nuevo Trabajador
+ <i data-lucide="user-plus" style="width:22px;height:22px"></i> Nuevo Trabajador
  </button>
  <div id="lista-trabajadores-rrhh"></div>
  <div style="margin-top:30px;border:2px solid #e0e0e0;border-radius:10px;overflow:hidden">
@@ -1388,39 +1388,39 @@
 
  <!-- Importar -->
  <div class="card">
- <h2><i data-lucide="tag" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Caravanas — Integración Baqueano</h2>
+ <h2><i data-lucide="tag" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Caravanas — Integración Baqueano</h2>
  <p style="color:#666;margin-bottom:16px">Importá el Excel exportado desde Baqueano App. La app lee cada lectura y arma el historial por caravana con alertas de vacunas.</p>
 
  <div style="margin-bottom:14px">
- <label style="display:block;font-weight:600;color:var(--azul);margin-bottom:6px"><i data-lucide="file-text" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Nombre del evento / lote</label>
+ <label style="display:block;font-weight:600;color:var(--azul);margin-bottom:6px"><i data-lucide="file-text" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Nombre del evento / lote</label>
  <input type="text" id="caravanas-grupo-nombre" placeholder="Ej: Vacunación aftosa - lote norte" style="width:100%;padding:12px;border:2px solid #ddd;border-radius:10px;font-size:1em">
  <div style="font-size:0.82em;color:#999;margin-top:4px">Identifica qué se hizo con este grupo de animales.</div>
  </div>
 
  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
  <div style="flex:1;min-width:140px">
- <label style="display:block;font-weight:600;color:var(--azul);margin-bottom:6px"><i data-lucide="bell" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Recordatorio</label>
+ <label style="display:block;font-weight:600;color:var(--azul);margin-bottom:6px"><i data-lucide="bell" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Recordatorio</label>
  <input type="text" id="caravanas-grupo-recordatorio" placeholder="Ej: revacunar" style="width:100%;padding:12px;border:2px solid #ddd;border-radius:10px;font-size:1em">
  </div>
  <div style="min-width:140px">
- <label style="display:block;font-weight:600;color:var(--azul);margin-bottom:6px"><i data-lucide="calendar" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Fecha</label>
+ <label style="display:block;font-weight:600;color:var(--azul);margin-bottom:6px"><i data-lucide="calendar" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Fecha</label>
  <input type="date" id="caravanas-grupo-fecha" style="width:100%;padding:12px;border:2px solid #ddd;border-radius:10px;font-size:1em">
  </div>
  </div>
 
  <div style="margin-bottom:14px">
- <label style="display:block;font-weight:600;color:var(--azul);margin-bottom:6px"><i data-lucide="pencil" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Notas del evento</label>
+ <label style="display:block;font-weight:600;color:var(--azul);margin-bottom:6px"><i data-lucide="pencil" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Notas del evento</label>
  <textarea id="caravanas-grupo-notas" placeholder="Qué se hizo, observaciones del lote..." style="width:100%;padding:12px;border:2px solid #ddd;border-radius:10px;font-size:1em;min-height:50px"></textarea>
  </div>
 
  <div style="margin-bottom:14px">
- <label style="display:block;font-weight:600;color:var(--azul);margin-bottom:6px"><i data-lucide="user" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Cargado por</label>
+ <label style="display:block;font-weight:600;color:var(--azul);margin-bottom:6px"><i data-lucide="user" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Cargado por</label>
  <input type="text" id="caravanas-grupo-usuario" placeholder="Tu nombre" style="width:100%;padding:12px;border:2px solid #ddd;border-radius:10px;font-size:1em">
  <div style="font-size:0.82em;color:#999;margin-top:4px">Provisorio: cuando haya login con Google, se completa solo.</div>
  </div>
 
  <div style="margin-bottom:14px">
- <label style="display:block;font-weight:600;color:var(--azul);margin-bottom:6px"><i data-lucide="map-pin" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Potrero (opcional)</label>
+ <label style="display:block;font-weight:600;color:var(--azul);margin-bottom:6px"><i data-lucide="map-pin" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Potrero (opcional)</label>
  <select id="caravanas-potrero-import" style="width:100%;padding:12px;border:2px solid #ddd;border-radius:10px;font-size:1em">
  <option value="">Sin asignar (elegir potrero...)</option>
  </select>
@@ -1442,7 +1442,7 @@
 
  <!-- BÚSQUEDA POR CARAVANA — siempre visible -->
  <div class="card">
- <h2 style="font-size:1.15em"><i data-lucide="search" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Buscar caravana</h2>
+ <h2 style="font-size:1.15em"><i data-lucide="search" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Buscar caravana</h2>
  <input type="text" id="caravanas-buscar" placeholder="Escribí el número de caravana..." 
  oninput="buscarCaravanaDirecto()"
  style="width:100%;padding:14px;border:2px solid var(--azul);border-radius:10px;font-size:1.1em;outline:none">
@@ -1451,14 +1451,14 @@
 
  <!-- EVENTOS DE MANEJO (lotes apilados/colapsables) -->
  <div class="card" id="caravanas-eventos-card" style="display:none">
- <h2 style="font-size:1.15em"><i data-lucide="layers" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Lotes / Eventos de manejo</h2>
+ <h2 style="font-size:1.15em"><i data-lucide="layers" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Lotes / Eventos de manejo</h2>
  <p style="font-size:0.85em;color:#666;margin-bottom:12px">Tocá un lote para ver sus caravanas. Buscá por fecha o por lo que hiciste.</p>
  <div id="caravanas-eventos-lista"></div>
  </div>
 
  <!-- Filtros secundarios (ocultos por defecto, para análisis) -->
  <div class="card" id="caravanas-filtros-card" style="display:none">
- <h2 style="font-size:1.05em"><i data-lucide="filter" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Todas las caravanas (filtrar / analizar)</h2>
+ <h2 style="font-size:1.05em"><i data-lucide="filter" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Todas las caravanas (filtrar / analizar)</h2>
  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
  <select id="caravanas-filtro-potrero" onchange="filtrarCaravanas()"
  style="padding:10px 14px;border:2px solid #ddd;border-radius:10px;font-size:1em;outline:none">
@@ -1478,7 +1478,7 @@
  <option value="proxima"> Próxima a vencer</option>
  <option value="ok"> Al día</option>
  </select>
- <button onclick="limpiarCaravanas()" style="padding:10px 16px;background:#ef4444;color:white;border:none;border-radius:10px;font-weight:bold;cursor:pointer"><i data-lucide="trash-2" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Limpiar todo</button>
+ <button onclick="limpiarCaravanas()" style="padding:10px 16px;background:#ef4444;color:white;border:none;border-radius:10px;font-weight:bold;cursor:pointer"><i data-lucide="trash-2" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Limpiar todo</button>
  </div>
  <div style="margin-top:10px;font-size:0.9em;color:#666" id="caravanas-resumen-texto"></div>
  </div>
@@ -1489,7 +1489,7 @@
 <div id="modal-nuevo-trabajador" onclick="if(event.target===this)cerrarModalNuevoTrabajador()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10000;align-items:center;justify-content:center;padding:20px">
  <div style="background:white;border-radius:16px;padding:28px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative">
  <button onclick="cerrarModalNuevoTrabajador()" class="btn-x-cerrar" title="Cerrar">&#x2715;</button>
- <h3 style="margin-bottom:18px;color:var(--azul);font-size:1.2em"><i data-lucide="user-plus" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Nuevo Trabajador</h3>
+ <h3 style="margin-bottom:18px;color:var(--azul);font-size:1.2em"><i data-lucide="user-plus" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Nuevo Trabajador</h3>
  <label style="display:block;font-size:0.9em;color:#555;margin-bottom:6px;font-weight:600">Nombre del trabajador</label>
  <input type="text" id="input-nuevo-trabajador"
  placeholder="Ej: Juan García"
@@ -1507,12 +1507,12 @@
 <div id="barra-masiva">
  <div class="barra-masiva-titulo" id="barra-masiva-titulo">0 caravanas seleccionadas</div>
  <div class="barra-masiva-acciones" id="barra-masiva-acciones">
- <button class="btn-masivo" onclick="masivo_potrero()"><i data-lucide="map-pin" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Cambiar potrero</button>
- <button class="btn-masivo" onclick="masivo_recordatorio()"><i data-lucide="bell" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Recordatorio</button>
- <button class="btn-masivo" onclick="masivo_vender()"><i data-lucide="dollar-sign" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Marcar vendidas</button>
- <button class="btn-masivo rojo" onclick="masivo_baja()"><i data-lucide="arrow-down-circle" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Dar de baja</button>
- <button class="btn-masivo rojo" id="btn-masivo-sacar" style="display:none" onclick="masivo_sacar()"><i data-lucide="log-out" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Sacar del grupo</button>
- <button class="btn-masivo cancelar" onclick="limpiarSeleccion()"><i data-lucide="x" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Cancelar</button>
+ <button class="btn-masivo" onclick="masivo_potrero()"><i data-lucide="map-pin" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Cambiar potrero</button>
+ <button class="btn-masivo" onclick="masivo_recordatorio()"><i data-lucide="bell" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Recordatorio</button>
+ <button class="btn-masivo" onclick="masivo_vender()"><i data-lucide="dollar-sign" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Marcar vendidas</button>
+ <button class="btn-masivo rojo" onclick="masivo_baja()"><i data-lucide="arrow-down-circle" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Dar de baja</button>
+ <button class="btn-masivo rojo" id="btn-masivo-sacar" style="display:none" onclick="masivo_sacar()"><i data-lucide="log-out" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Sacar del grupo</button>
+ <button class="btn-masivo cancelar" onclick="limpiarSeleccion()"><i data-lucide="x" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Cancelar</button>
  </div>
 </div>
 
@@ -2301,7 +2301,7 @@
  <label style="display:block;font-weight:bold;color:#1e293b;margin-bottom:10px;font-size:1.15em"> TRABAJOS POR HACER</label>
  ${p.trabajos_pendientes.map(t => `
  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;background:white;padding:8px;border-radius:6px;border:1px solid #e2e8f0">
- <input type="checkbox" ${t.hecho ? 'checked' : ''} onchange="togglePendiente(${idx}, ${t.id})" style="width:18px;height:18px;cursor:pointer">
+ <input type="checkbox" ${t.hecho ? 'checked' : ''} onchange="togglePendiente(${idx}, ${t.id})" style="width:22px;height:22px;cursor:pointer">
  <span style="flex:1;font-size:0.9em;${t.hecho ? 'text-decoration:line-through;color:#94a3b8' : ''}">${t.texto}</span>
  <button onclick="eliminarPendiente(${idx}, ${t.id})" style="background:none;border:none;color:#ef4444;cursor:pointer"></button>
  </div>
@@ -2903,7 +2903,7 @@ function abrirPlano() {
  Cargar KMZ(s)
  <input type="file" accept=".kmz,.kml" multiple onchange="cargarKMZ(event)" style="display:none">
  </label>
- <button onclick="limpiarTodasCapas()" style="background:#dc2626;color:white;border:none;padding:13px 18px;border-radius:10px;cursor:pointer;font-weight:700;font-size:1em;min-height:50px"><i data-lucide="trash-2" style="width:16px;height:16px;vertical-align:middle;flex-shrink:0"></i> Limpiar todo</button>
+ <button onclick="limpiarTodasCapas()" style="background:#dc2626;color:white;border:none;padding:13px 18px;border-radius:10px;cursor:pointer;font-weight:700;font-size:1em;min-height:50px"><i data-lucide="trash-2" style="width:20px;height:20px;vertical-align:middle;flex-shrink:0"></i> Limpiar todo</button>
  <button onclick="cerrarPlano()" class="btn-x-cerrar-inline" title="Cerrar">&#x2715;</button>
  </div>
  </div>
