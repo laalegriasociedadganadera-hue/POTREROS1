@@ -1533,10 +1533,10 @@
  // Nombres de potreros de la estancia — cantidades siempre en 0 como base.
  // Los datos reales se cargan desde localStorage (y en el futuro desde Supabase).
  const POTREROS_BASE = [
- "Canteras","La costa","Potrero 1","Potrero 2","Potrero 3","Potrero 4",
- "Potrero 5","Potrero 6","Verdeo frente","Túnel","Peppa","PRV",
- "Feliciano","Lecheras","Mako","Baño","Australino","Molino",
- "Campo arriba","pradera","laguna"
+ "Canteras","Costa","Potrero 1","Potrero 2","Potrero 3","Potrero 4",
+ "Potrero 5","Potrero 6","Pradera frente","Túnel","Peppa","PRV",
+ "Feliciano","Lecheras","Mako","Baño","Australiano","Molino",
+ "Campo arriba","Pradera alegría","Laguna"
  ];
  const _p0 = () => ({ha:0,toros:0,vacas_cria:0,vacas_inver:0,nov_mas3:0,nov_23:0,nov_12:0,vaq_mas2:0,vaq_12:0,terneros_as:0,terneros:0,terneras:0,total:0});
  let potreros = POTREROS_BASE.map(nombre => ({ nombre, ..._p0() }));
@@ -1581,6 +1581,10 @@
  const datos = JSON.parse(guardado);
  if (Array.isArray(datos) && datos.length) potreros = datos;
  } catch(e) {}
+ }
+ // Migrar nombres viejos a los nombres de los KMZ
+ if (typeof RENOMBRAR_POTREROS !== 'undefined') {
+ potreros.forEach(p => { if (RENOMBRAR_POTREROS[p.nombre]) p.nombre = RENOMBRAR_POTREROS[p.nombre]; });
  }
  sanearPotreros();
  // Poblar selects de caravanas ahora que potreros está listo
@@ -1779,6 +1783,10 @@
  const guardado = localStorage.getItem('potreros_historial_v6');
  if (guardado) {
  try { historial = JSON.parse(guardado); } catch(e) { historial = []; }
+ }
+ // Migrar nombres de potrero viejos en el historial
+ if (typeof RENOMBRAR_POTREROS !== 'undefined') {
+ historial.forEach(h => { if (h && RENOMBRAR_POTREROS[h.potrero]) h.potrero = RENOMBRAR_POTREROS[h.potrero]; });
  }
  aplicarPurgaAutomatica();
  renderizarActividades();
@@ -2901,10 +2909,9 @@ const KMZ_ARCHIVOS = [
  'Pradera alegría','Pradera frente','PRV','Túnel'
 ];
 
-// Mapa de equivalencias: nombre interno del KMZ → nombre del potrero en la app
+// Mapa de equivalencias: SOLO para placemarks internos del KMZ que difieren
+// del nombre del archivo/potrero (los nombres de potrero ya coinciden con los KMZ).
 const KMZ_ALIAS = {
- 'australiano': 'australino',
- 'costa': 'la costa',
  'pepa': 'peppa',
  '1': 'potrero 1',
  '2': 'potrero 2',
@@ -2912,9 +2919,16 @@ const KMZ_ALIAS = {
  '4': 'potrero 4',
  '5': 'potrero 5',
  '6': 'potrero 6',
- 'pradera alegria': 'pradera',
- 'pradera frente': 'verdeo frente',
  'los cerros canteras': 'canteras',
+};
+
+// Migración: renombra potreros viejos a los nombres de los KMZ en datos guardados
+const RENOMBRAR_POTREROS = {
+ 'La costa': 'Costa',
+ 'Australino': 'Australiano',
+ 'Verdeo frente': 'Pradera frente',
+ 'pradera': 'Pradera alegría',
+ 'laguna': 'Laguna',
 };
 
 function toggleAdminPlano() {
@@ -2939,6 +2953,7 @@ function actualizarBotonesAdminPlano() {
  if (bAdmin) bAdmin.style.display = esAdminPlano ? 'flex' : 'none';
  const btnPin = document.getElementById('btn-admin-plano');
  if (btnPin) btnPin.title = esAdminPlano ? 'Desactivar admin' : 'Acceso admin';
+ actualizarListaKMZ();
 }
 
 function abrirPlano() {
@@ -3046,7 +3061,7 @@ async function procesarGeojsonKMZ(nombre, geojson) {
  geojson.features.forEach(f => {
  const nom = f.properties && f.properties.name;
  if (nom) {
- const n = norm(nom);
+ const n = KMZ_ALIAS[norm(nom)] || norm(nom);
  if (!nombresApp.includes(n) && !nombresApp.some(x => x.replace(/ /g,'') === n.replace(/ /g,'')))
  sinMatch.push(nom);
  }
@@ -3240,7 +3255,7 @@ function actualizarListaKMZ() {
  <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.1);border-radius:9px;padding:8px 12px;margin-bottom:5px;gap:10px">
  <span style="color:white;font-size:0.95em;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%"> ${c.nombre}</span>
  <span style="color:#d1d5db;font-size:0.85em;flex-shrink:0">${total} elem.${sinMatch}</span>
- <button data-kmz-idx="${i}" title="Eliminar este plano" style="background:#dc2626;color:white;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:0.95em;font-weight:700;flex-shrink:0;min-height:40px"></button>
+ ${esAdminPlano ? `<button data-kmz-idx="${i}" title="Eliminar este plano" style="background:#dc2626;color:white;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:0.95em;font-weight:700;flex-shrink:0;min-height:40px">&#x2715;</button>` : ''}
  </div>`;
  }).join('')}
  `;
@@ -3404,6 +3419,11 @@ function cargarCaravanas() {
  if (g) try { caravanas = JSON.parse(g); } catch(e) { caravanas = {}; }
  const gm = localStorage.getItem('grupos_manejo_v6');
  if (gm) try { gruposManejo = JSON.parse(gm); } catch(e) { gruposManejo = {}; }
+ // Migrar nombres de potrero viejos en caravanas y eventos
+ if (typeof RENOMBRAR_POTREROS !== 'undefined') {
+ Object.values(caravanas).forEach(c => { if (c && RENOMBRAR_POTREROS[c.potrero]) c.potrero = RENOMBRAR_POTREROS[c.potrero]; });
+ Object.values(gruposManejo).forEach(g => { if (g && RENOMBRAR_POTREROS[g.potrero]) g.potrero = RENOMBRAR_POTREROS[g.potrero]; });
+ }
 }
 
 function guardarCaravanas() {
