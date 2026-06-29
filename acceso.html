@@ -280,7 +280,7 @@ const db   = getFirestore(app);
         if (!result) return;
 
         const user    = result.user;
-        const pinUsado = sessionStorage.getItem('pin_acceso');
+        const pinUsado = sessionStorage.getItem('pin_acceso') || localStorage.getItem('pin_acceso');
         const userRef  = doc(db, 'usuarios', user.uid);
         const userSnap = await getDoc(userRef);
 
@@ -304,6 +304,7 @@ const db   = getFirestore(app);
                 creadoEn: serverTimestamp(),
             });
             sessionStorage.removeItem('pin_acceso');
+            localStorage.removeItem('pin_acceso');
             document.getElementById('email-pendiente').textContent = user.email;
             irPaso('paso-pendiente');
         } else {
@@ -334,6 +335,7 @@ window.validarPin = async function() {
             mostrarMsg(msg, 'error', 'Este PIN ya fue utilizado.');
         } else {
             sessionStorage.setItem('pin_acceso', pin);
+            localStorage.setItem('pin_acceso', pin);
             irPaso('paso-google');
         }
     } catch(e) {
