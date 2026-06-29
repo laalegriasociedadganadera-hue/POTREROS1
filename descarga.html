@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Alegría — Descargar App</title>
+    <meta name="theme-color" content="#0f2d52">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #0f2d52;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 44px 36px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .logo-nombre {
+            font-size: 2em;
+            font-weight: 900;
+            color: #3a7d44;
+            letter-spacing: 0.04em;
+        }
+        .logo-sub {
+            font-size: 0.72em;
+            color: #94a3b8;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .divider {
+            width: 40px; height: 3px;
+            background: #3a7d44; border-radius: 3px;
+            margin: 16px auto 28px; opacity: 0.5;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 28px;
+        }
+        .user-foto {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+        }
+        .user-nombre { font-weight: 700; color: #1e293b; font-size: 0.9em; }
+        .user-email  { color: #94a3b8; font-size: 0.78em; }
+
+        h2 {
+            font-size: 1.05em;
+            color: #1d4e89;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        p {
+            color: #64748b;
+            font-size: 0.88em;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .btn-descarga {
+            display: block;
+            width: 100%;
+            background: #3a7d44;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin-bottom: 12px;
+        }
+        .btn-descarga:hover { background: #2d6235; }
+
+        .instrucciones {
+            background: #f0f9ff;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: left;
+            margin-top: 20px;
+        }
+        .instrucciones h3 {
+            font-size: 0.82em;
+            color: #0369a1;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .instrucciones ol {
+            padding-left: 18px;
+            color: #1e293b;
+            font-size: 0.85em;
+            line-height: 1.8;
+        }
+
+        .btn-logout {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 20px;
+            text-decoration: underline;
+        }
+        .btn-logout:hover { color: #64748b; }
+
+        /* Estados */
+        .estado { display: none; }
+        .estado.activo { display: block; }
+
+        .spinner-wrap {
+            padding: 40px 0;
+            color: #94a3b8;
+            font-size: 0.88em;
+        }
+        .spinner {
+            display: inline-block; width: 32px; height: 32px;
+            border: 3px solid #e2e8f0; border-top-color: #1d4e89;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .no-acceso { padding: 20px 0; }
+        .no-acceso .icono { font-size: 3em; margin-bottom: 12px; }
+        .no-acceso p { color: #64748b; font-size: 0.9em; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="logo-nombre">LA ALEGRÍA</div>
+    <div class="logo-sub">Negocios Ganaderos</div>
+    <div class="divider"></div>
+
+    <!-- Cargando -->
+    <div class="estado activo" id="estado-cargando">
+        <div class="spinner-wrap">
+            <div class="spinner"></div><br>Verificando acceso...
+        </div>
+    </div>
+
+    <!-- Sin sesión -->
+    <div class="estado" id="estado-sin-sesion">
+        <div class="no-acceso">
+            <div class="icono">&#128274;</div>
+            <h2>Acceso restringido</h2>
+            <p>Necesitás registrarte con un PIN de acceso y tener aprobación del administrador.</p>
+        </div>
+        <a href="acceso.html" style="display:block;background:#1d4e89;color:white;border-radius:12px;padding:15px;font-weight:700;text-decoration:none;font-size:0.95em;">Ir a registro</a>
+    </div>
+
+    <!-- Pendiente -->
+    <div class="estado" id="estado-pendiente">
+        <div class="no-acceso">
+            <div class="icono">&#9203;</div>
+            <h2>Solicitud en revisión</h2>
+            <p>Tu cuenta <strong id="email-pendiente" style="color:#1d4e89"></strong> está esperando aprobación del administrador.<br><br>Volvé pronto.</p>
+        </div>
+        <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+
+    <!-- Rechazado -->
+    <div class="estado" id="estado-rechazado">
+        <div class="no-acceso">
+            <div class="icono">&#10060;</div>
+            <h2>Acceso denegado</h2>
+            <p>Tu solicitud fue rechazada. Contactá al administrador si creés que es un error.</p>
+        </div>
+        <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+
+    <!-- Aprobado -->
+    <div class="estado" id="estado-aprobado">
+        <div class="user-info">
+            <img class="user-foto" id="user-foto" src="" alt="">
+            <div>
+                <div class="user-nombre" id="user-nombre"></div>
+                <div class="user-email"  id="user-email"></div>
+            </div>
+        </div>
+        <h2>Acceso aprobado</h2>
+        <p>Podés usar la app directamente desde el browser o guardarla en tu dispositivo.</p>
+        <a id="link-app" href="La Alegria - Gestion Potreros.html" class="btn-descarga">Abrir La Alegría</a>
+        <div class="instrucciones">
+            <h3>Guardar en tu dispositivo</h3>
+            <ol>
+                <li>Abrí el link de arriba</li>
+                <li>En el browser, tocá <strong>Compartir</strong></li>
+                <li>Elegí <strong>"Agregar a pantalla de inicio"</strong></li>
+                <li>La app queda como ícono en tu celular</li>
+            </ol>
+        </div>
+        <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBVIC-_CrjcbRvMnY-qcyMl_tzDfph8H3E",
+    authDomain: "laalegria-78b04.firebaseapp.com",
+    projectId: "laalegria-78b04",
+    storageBucket: "laalegria-78b04.firebasestorage.app",
+    messagingSenderId: "766520476219",
+    appId: "1:766520476219:web:72c1edbc1d12063cecd21e"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+onAuthStateChanged(auth, async user => {
+    if (!user) { mostrar('estado-sin-sesion'); return; }
+
+    const snap = await getDoc(doc(db, 'usuarios', user.uid));
+    if (!snap.exists()) { mostrar('estado-sin-sesion'); return; }
+
+    const estado = snap.data().estado;
+
+    if (estado === 'aprobado') {
+        document.getElementById('user-foto').src    = user.photoURL || '';
+        document.getElementById('user-nombre').textContent = user.displayName || '';
+        document.getElementById('user-email').textContent  = user.email;
+        mostrar('estado-aprobado');
+    } else if (estado === 'pendiente') {
+        document.getElementById('email-pendiente').textContent = user.email;
+        mostrar('estado-pendiente');
+    } else {
+        mostrar('estado-rechazado');
+    }
+});
+
+function mostrar(id) {
+    document.querySelectorAll('.estado').forEach(e => e.classList.remove('activo'));
+    document.getElementById(id).classList.add('activo');
+}
+
+window.cerrarSesion = async function() {
+    await signOut(auth);
+    window.location.href = 'acceso.html';
+};
+</script>
+
+</body>
+</html>

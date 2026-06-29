@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Alegría — Admin</title>
+    <meta name="theme-color" content="#0f2d52">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+        }
+        header {
+            background: #0f2d52;
+            color: white;
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+        }
+        .header-logo { font-size: 1.15em; font-weight: 900; letter-spacing: 0.04em; color: #3a7d44; }
+        .header-sub  { font-size: 0.7em; color: rgba(255,255,255,0.5); letter-spacing: 0.15em; margin-top: 2px; }
+        .btn-logout {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.82em;
+            font-weight: 600;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        .btn-logout:hover { background: rgba(255,255,255,0.2); }
+
+        main { max-width: 960px; margin: 0 auto; padding: 28px 20px; }
+
+        h2 {
+            font-size: 1em;
+            font-weight: 700;
+            color: #1d4e89;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 14px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        /* PINs */
+        .pin-gen {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background: #1d4e89;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 22px;
+            font-size: 0.9em;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover { background: #163a66; }
+
+        .pin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #f0f9ff;
+            border: 2px solid #bae6fd;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #0369a1;
+            letter-spacing: 0.15em;
+        }
+        .btn-copy {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #0369a1;
+            font-size: 0.85em;
+            font-weight: 600;
+            font-family: inherit;
+            padding: 0;
+        }
+        .btn-copy:hover { text-decoration: underline; }
+
+        .pins-lista { margin-top: 6px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88em;
+        }
+        th {
+            text-align: left;
+            padding: 10px 12px;
+            color: #64748b;
+            font-weight: 700;
+            font-size: 0.78em;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        td {
+            padding: 12px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8fafc; }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.78em;
+            font-weight: 700;
+        }
+        .badge-pendiente  { background: #fef9c3; color: #854d0e; }
+        .badge-aprobado   { background: #dcfce7; color: #15803d; }
+        .badge-rechazado  { background: #fee2e2; color: #b91c1c; }
+        .badge-libre      { background: #f0f9ff; color: #0369a1; }
+        .badge-usado      { background: #f1f5f9; color: #94a3b8; }
+
+        .acciones { display: flex; gap: 8px; }
+        .btn-aprobar, .btn-rechazar {
+            border: none;
+            border-radius: 7px;
+            padding: 6px 14px;
+            font-size: 0.8em;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.2s;
+        }
+        .btn-aprobar  { background: #dcfce7; color: #15803d; }
+        .btn-rechazar { background: #fee2e2; color: #b91c1c; }
+        .btn-aprobar:hover, .btn-rechazar:hover { opacity: 0.7; }
+
+        .empty { color: #94a3b8; font-size: 0.88em; padding: 16px 0; text-align: center; }
+
+        /* Login guard */
+        #login-guard {
+            position: fixed; inset: 0;
+            background: #0f2d52;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 999;
+        }
+        .guard-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 32px;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .guard-card .logo-nombre { font-size: 1.8em; font-weight: 900; color: #3a7d44; letter-spacing: 0.04em; }
+        .guard-card .logo-sub   { font-size: 0.7em; color: #94a3b8; letter-spacing: 0.2em; text-transform: uppercase; margin-top: 4px; }
+        .guard-card h3 { color: #1d4e89; font-size: 1em; margin: 20px 0 14px; }
+        .btn-google-guard {
+            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            background: white; border: 2px solid #e2e8f0; border-radius: 10px;
+            padding: 14px; font-size: 1em; font-weight: 600; color: #1e293b;
+            cursor: pointer; transition: border-color 0.2s; font-family: inherit;
+        }
+        .btn-google-guard:hover { border-color: #1d4e89; }
+        .guard-error { color: #b91c1c; font-size: 0.85em; margin-top: 12px; font-weight: 600; }
+
+        .spinner {
+            display: inline-block; width: 18px; height: 18px;
+            border: 3px solid rgba(255,255,255,0.3); border-top-color: white;
+            border-radius: 50%; animation: spin 0.7s linear infinite;
+            vertical-align: middle; margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .toast-admin {
+            position: fixed; bottom: 24px; right: 24px;
+            background: #1d4e89; color: white;
+            padding: 12px 20px; border-radius: 10px;
+            font-size: 0.88em; font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transform: translateY(80px); opacity: 0;
+            transition: all 0.3s; z-index: 100;
+        }
+        .toast-admin.show { transform: translateY(0); opacity: 1; }
+        .toast-admin.ok   { background: #15803d; }
+    </style>
+</head>
+<body>
+
+<!-- Guard de login -->
+<div id="login-guard">
+    <div class="guard-card">
+        <div class="logo-nombre">LA ALEGRÍA</div>
+        <div class="logo-sub">Panel de Administración</div>
+        <h3>Ingresá con tu cuenta de administrador</h3>
+        <button class="btn-google-guard" onclick="loginAdmin()" id="btn-google-admin">
+            <svg width="20" height="20" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Entrar con Google
+        </button>
+        <div class="guard-error" id="guard-error"></div>
+    </div>
+</div>
+
+<!-- App principal -->
+<header>
+    <div>
+        <div class="header-logo">LA ALEGRÍA</div>
+        <div class="header-sub">Panel de Administración</div>
+    </div>
+    <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión</button>
+</header>
+
+<main>
+
+    <!-- Generar PINs -->
+    <div class="section">
+        <h2>Generar PIN de acceso</h2>
+        <div class="pin-gen">
+            <button class="btn-primary" onclick="generarPin()">+ Generar nuevo PIN</button>
+            <div class="pin-badge" id="pin-nuevo" style="display:none">
+                <span id="pin-valor"></span>
+                <button class="btn-copy" onclick="copiarPin()">Copiar</button>
+            </div>
+        </div>
+        <h2 style="margin-top:8px">PINs generados</h2>
+        <div class="pins-lista">
+            <table>
+                <thead><tr><th>PIN</th><th>Estado</th><th>Usado por</th><th>Fecha</th></tr></thead>
+                <tbody id="tabla-pins"><tr><td colspan="4" class="empty">Cargando...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Usuarios pendientes -->
+    <div class="section">
+        <h2>Usuarios pendientes de aprobación</h2>
+        <table>
+            <thead><tr><th>Nombre</th><th>Email</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="tabla-pendientes"><tr><td colspan="4" class="empty">Cargando...</td></tr></tbody>
+        </table>
+    </div>
+
+    <!-- Todos los usuarios -->
+    <div class="section">
+        <h2>Todos los usuarios registrados</h2>
+        <table>
+            <thead><tr><th>Nombre</th><th>Email</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="tabla-usuarios"><tr><td colspan="4" class="empty">Cargando...</td></tr></tbody>
+        </table>
+    </div>
+
+</main>
+
+<div class="toast-admin" id="toast-admin"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, getDocs,
+         orderBy, query, serverTimestamp }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const ADMIN_EMAIL = 'laalegriasociedadganadera@gmail.com';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBVIC-_CrjcbRvMnY-qcyMl_tzDfph8H3E",
+    authDomain: "laalegria-78b04.firebaseapp.com",
+    projectId: "laalegria-78b04",
+    storageBucket: "laalegria-78b04.firebasestorage.app",
+    messagingSenderId: "766520476219",
+    appId: "1:766520476219:web:72c1edbc1d12063cecd21e"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── Auth guard ───────────────────────────────────────────────
+onAuthStateChanged(auth, user => {
+    if (user && user.email === ADMIN_EMAIL) {
+        document.getElementById('login-guard').style.display = 'none';
+        cargarDatos();
+    } else if (user) {
+        document.getElementById('guard-error').textContent = 'Esta cuenta no tiene permisos de administrador.';
+        signOut(auth);
+    }
+});
+
+window.loginAdmin = async function() {
+    const btn = document.getElementById('btn-google-admin');
+    const err = document.getElementById('guard-error');
+    btn.disabled = true;
+    try {
+        await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch(e) {
+        err.textContent = 'Error al iniciar sesión. Intentá de nuevo.';
+        btn.disabled = false;
+    }
+};
+
+window.cerrarSesion = async function() {
+    await signOut(auth);
+    document.getElementById('login-guard').style.display = 'flex';
+};
+
+// ── Generar PIN ──────────────────────────────────────────────
+let ultimoPin = null;
+
+window.generarPin = async function() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let pin = '';
+    for (let i = 0; i < 6; i++) pin += chars[Math.floor(Math.random() * chars.length)];
+
+    await setDoc(doc(db, 'pins', pin), {
+        usado: false,
+        creadoEn: serverTimestamp(),
+        usadoPor: null,
+        usadoEn: null,
+    });
+
+    ultimoPin = pin;
+    document.getElementById('pin-valor').textContent = pin;
+    document.getElementById('pin-nuevo').style.display = 'inline-flex';
+    toast('PIN generado: ' + pin, 'ok');
+    cargarPins();
+};
+
+window.copiarPin = function() {
+    if (ultimoPin) navigator.clipboard.writeText(ultimoPin).then(() => toast('PIN copiado', 'ok'));
+};
+
+// ── Cargar datos ─────────────────────────────────────────────
+async function cargarDatos() {
+    await Promise.all([cargarPins(), cargarUsuarios()]);
+}
+
+async function cargarPins() {
+    const snap = await getDocs(query(collection(db, 'pins'), orderBy('creadoEn', 'desc')));
+    const tbody = document.getElementById('tabla-pins');
+    if (snap.empty) { tbody.innerHTML = '<tr><td colspan="4" class="empty">Sin PINs generados</td></tr>'; return; }
+    tbody.innerHTML = snap.docs.map(d => {
+        const p = d.data();
+        const fecha = p.creadoEn ? new Date(p.creadoEn.seconds*1000).toLocaleDateString('es-AR') : '—';
+        const badge = p.usado
+            ? `<span class="badge badge-usado">Usado</span>`
+            : `<span class="badge badge-libre">Libre</span>`;
+        return `<tr><td><strong>${d.id}</strong></td><td>${badge}</td><td>${p.usadoPor || '—'}</td><td>${fecha}</td></tr>`;
+    }).join('');
+}
+
+async function cargarUsuarios() {
+    const snap = await getDocs(query(collection(db, 'usuarios'), orderBy('creadoEn', 'desc')));
+    const tbodyP = document.getElementById('tabla-pendientes');
+    const tbodyT = document.getElementById('tabla-usuarios');
+
+    if (snap.empty) {
+        tbodyP.innerHTML = '<tr><td colspan="4" class="empty">Sin usuarios pendientes</td></tr>';
+        tbodyT.innerHTML = '<tr><td colspan="4" class="empty">Sin usuarios registrados</td></tr>';
+        return;
+    }
+
+    const pendientes = snap.docs.filter(d => d.data().estado === 'pendiente');
+    const todos      = snap.docs;
+
+    tbodyP.innerHTML = pendientes.length
+        ? pendientes.map(d => filaUsuario(d)).join('')
+        : '<tr><td colspan="4" class="empty">Sin usuarios pendientes</td></tr>';
+
+    tbodyT.innerHTML = todos.map(d => filaUsuario(d)).join('');
+}
+
+function filaUsuario(d) {
+    const u = d.data();
+    const estado = u.estado;
+    const badgeClass = { pendiente: 'badge-pendiente', aprobado: 'badge-aprobado', rechazado: 'badge-rechazado' }[estado] || '';
+    const badgeLabel = { pendiente: 'Pendiente', aprobado: 'Aprobado', rechazado: 'Rechazado' }[estado] || estado;
+
+    let acciones = '';
+    if (estado === 'pendiente') {
+        acciones = `<div class="acciones">
+            <button class="btn-aprobar"  onclick="cambiarEstado('${d.id}','aprobado')">Aprobar</button>
+            <button class="btn-rechazar" onclick="cambiarEstado('${d.id}','rechazado')">Rechazar</button>
+        </div>`;
+    } else if (estado === 'aprobado') {
+        acciones = `<button class="btn-rechazar" onclick="cambiarEstado('${d.id}','rechazado')">Revocar</button>`;
+    } else {
+        acciones = `<button class="btn-aprobar" onclick="cambiarEstado('${d.id}','aprobado')">Re-aprobar</button>`;
+    }
+
+    return `<tr>
+        <td>${u.nombre || '—'}</td>
+        <td>${u.email}</td>
+        <td><span class="badge ${badgeClass}">${badgeLabel}</span></td>
+        <td>${acciones}</td>
+    </tr>`;
+}
+
+window.cambiarEstado = async function(uid, nuevoEstado) {
+    await updateDoc(doc(db, 'usuarios', uid), { estado: nuevoEstado });
+    toast(nuevoEstado === 'aprobado' ? 'Usuario aprobado' : 'Acceso revocado', 'ok');
+    cargarUsuarios();
+};
+
+// ── Toast ────────────────────────────────────────────────────
+function toast(msg, tipo) {
+    const el = document.getElementById('toast-admin');
+    el.textContent = msg;
+    el.className = `toast-admin ${tipo || ''} show`;
+    setTimeout(() => el.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

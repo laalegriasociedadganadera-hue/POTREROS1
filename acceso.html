@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Alegría — Acceso</title>
+    <meta name="theme-color" content="#0f2d52">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #0f2d52;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .logo-nombre {
+            font-size: 2em;
+            font-weight: 900;
+            color: #3a7d44;
+            letter-spacing: 0.04em;
+        }
+        .logo-sub {
+            font-size: 0.72em;
+            color: #94a3b8;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .divider {
+            width: 40px;
+            height: 3px;
+            background: #3a7d44;
+            border-radius: 3px;
+            margin: 16px auto 0;
+            opacity: 0.5;
+        }
+
+        h2 {
+            font-size: 1.1em;
+            color: #1d4e89;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .paso { display: none; }
+        .paso.activo { display: block; }
+
+        label {
+            display: block;
+            font-size: 0.8em;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+            margin-bottom: 16px;
+            color: #1e293b;
+        }
+        input:focus { border-color: #1d4e89; }
+
+        .btn-google {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 1em;
+            font-weight: 600;
+            color: #1e293b;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+        .btn-google:hover {
+            border-color: #1d4e89;
+            box-shadow: 0 4px 12px rgba(29,78,137,0.1);
+        }
+        .btn-google svg { flex-shrink: 0; }
+
+        .btn-primary {
+            width: 100%;
+            background: #1d4e89;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+            margin-top: 4px;
+        }
+        .btn-primary:hover { background: #163a66; }
+        .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #1d4e89;
+            font-size: 0.88em;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            text-decoration: underline;
+            margin-top: 14px;
+            display: block;
+            text-align: center;
+        }
+
+        .msg {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.88em;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .msg.error { background: #fee2e2; color: #b91c1c; display: block; }
+        .msg.ok    { background: #dcfce7; color: #15803d; display: block; }
+        .msg.info  { background: #eff6ff; color: #1d4e89; display: block; }
+
+        .estado-pendiente {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .estado-pendiente .icono {
+            font-size: 3em;
+            margin-bottom: 12px;
+        }
+        .estado-pendiente p {
+            color: #64748b;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        .estado-pendiente strong { color: #1d4e89; }
+
+        .volver {
+            display: block;
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8em;
+            margin-top: 20px;
+            text-decoration: none;
+            letter-spacing: 0.05em;
+        }
+        .volver:hover { color: white; }
+
+        .spinner {
+            display: inline-block;
+            width: 18px; height: 18px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="logo">
+        <div class="logo-nombre">LA ALEGRÍA</div>
+        <div class="logo-sub">Negocios Ganaderos</div>
+        <div class="divider"></div>
+    </div>
+
+    <!-- PASO 1: ingresar PIN -->
+    <div class="paso activo" id="paso-pin">
+        <h2>Ingresá tu PIN de acceso</h2>
+        <div class="msg" id="msg-pin"></div>
+        <label for="inp-pin">PIN</label>
+        <input type="text" id="inp-pin" placeholder="Ej: X7K2M9" maxlength="12"
+               oninput="this.value=this.value.toUpperCase()"
+               onkeydown="if(event.key==='Enter')validarPin()">
+        <button class="btn-primary" onclick="validarPin()" id="btn-validar-pin">Continuar</button>
+    </div>
+
+    <!-- PASO 2: conectar con Google -->
+    <div class="paso" id="paso-google">
+        <h2>Conectá tu cuenta Google</h2>
+        <div class="msg info">PIN válido. Ahora asociá tu cuenta Google para acceder a la app.</div>
+        <div class="msg" id="msg-google"></div>
+        <button class="btn-google" onclick="loginGoogle()" id="btn-google">
+            <svg width="20" height="20" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Continuar con Google
+        </button>
+        <button class="btn-link" onclick="irPaso('paso-pin')">Cambiar PIN</button>
+    </div>
+
+    <!-- PASO 3: pendiente de aprobación -->
+    <div class="paso" id="paso-pendiente">
+        <div class="estado-pendiente">
+            <div class="icono">&#9203;</div>
+            <h2>Solicitud enviada</h2>
+            <p>Tu cuenta <strong id="email-pendiente"></strong> está pendiente de aprobación.<br><br>
+            El administrador revisará tu solicitud y recibirás acceso en breve.</p>
+        </div>
+        <button class="btn-link" onclick="cerrarSesionFirebase()">Usar otra cuenta</button>
+    </div>
+
+    <!-- PASO 4: aprobado → ir a la app -->
+    <div class="paso" id="paso-aprobado">
+        <div class="estado-pendiente">
+            <div class="icono">&#10003;</div>
+            <h2 style="color:#15803d">Acceso aprobado</h2>
+            <p>Bienvenido/a. Redirigiendo a la app...</p>
+        </div>
+    </div>
+
+</div>
+
+<a href="index.html" class="volver">&#8592; Volver al inicio</a>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBVIC-_CrjcbRvMnY-qcyMl_tzDfph8H3E",
+    authDomain: "laalegria-78b04.firebaseapp.com",
+    projectId: "laalegria-78b04",
+    storageBucket: "laalegria-78b04.firebasestorage.app",
+    messagingSenderId: "766520476219",
+    appId: "1:766520476219:web:72c1edbc1d12063cecd21e"
+};
+
+const app   = initializeApp(firebaseConfig);
+const auth  = getAuth(app);
+const db    = getFirestore(app);
+
+let pinUsado = null;
+
+// ── Validar PIN ──────────────────────────────────────────────
+window.validarPin = async function() {
+    const pin = document.getElementById('inp-pin').value.trim().toUpperCase();
+    const msg = document.getElementById('msg-pin');
+    const btn = document.getElementById('btn-validar-pin');
+    if (!pin) { mostrarMsg(msg, 'error', 'Ingresá un PIN.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Verificando...';
+
+    try {
+        const ref = doc(db, 'pins', pin);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) {
+            mostrarMsg(msg, 'error', 'PIN inválido o ya utilizado.');
+        } else if (snap.data().usado) {
+            mostrarMsg(msg, 'error', 'Este PIN ya fue utilizado.');
+        } else {
+            pinUsado = pin;
+            irPaso('paso-google');
+        }
+    } catch(e) {
+        mostrarMsg(msg, 'error', 'Error de conexión. Intentá de nuevo.');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = 'Continuar';
+};
+
+// ── Login Google ─────────────────────────────────────────────
+window.loginGoogle = async function() {
+    const msg = document.getElementById('msg-google');
+    const btn = document.getElementById('btn-google');
+    btn.disabled = true;
+
+    try {
+        const provider = new GoogleAuthProvider();
+        const result   = await signInWithPopup(auth, provider);
+        const user     = result.user;
+
+        const userRef  = doc(db, 'usuarios', user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+            // Usuario ya registrado — verificar estado
+            const estado = userSnap.data().estado;
+            if (estado === 'aprobado') {
+                irPaso('paso-aprobado');
+                setTimeout(() => { window.location.href = 'descarga.html'; }, 1500);
+            } else {
+                document.getElementById('email-pendiente').textContent = user.email;
+                irPaso('paso-pendiente');
+            }
+        } else {
+            // Registro nuevo — marcar PIN como usado y crear usuario pendiente
+            await updateDoc(doc(db, 'pins', pinUsado), { usado: true, usadoPor: user.email, usadoEn: serverTimestamp() });
+            await setDoc(userRef, {
+                uid:       user.uid,
+                nombre:    user.displayName,
+                email:     user.email,
+                foto:      user.photoURL,
+                estado:    'pendiente',
+                creadoEn:  serverTimestamp(),
+            });
+            document.getElementById('email-pendiente').textContent = user.email;
+            irPaso('paso-pendiente');
+        }
+    } catch(e) {
+        mostrarMsg(msg, 'error', 'Error al conectar con Google. Intentá de nuevo.');
+        btn.disabled = false;
+    }
+};
+
+window.cerrarSesionFirebase = async function() {
+    await signOut(auth);
+    irPaso('paso-pin');
+};
+
+// ── Helpers ──────────────────────────────────────────────────
+window.irPaso = function(id) {
+    document.querySelectorAll('.paso').forEach(p => p.classList.remove('activo'));
+    document.getElementById(id).classList.add('activo');
+};
+
+function mostrarMsg(el, tipo, texto) {
+    el.className = `msg ${tipo}`;
+    el.textContent = texto;
+}
+</script>
+
+</body>
+</html>
