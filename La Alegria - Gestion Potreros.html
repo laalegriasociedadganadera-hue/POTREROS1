@@ -3581,6 +3581,7 @@ async function importarExcelBaqueano(file) {
  let totalLecturas = 0, nuevasCaravanas = 0;
  const idesDelGrupo = new Set();
  const avisosDuplicado = [];
+ let colMap = {}; // col-letter → header-name-normalizado (accesible fuera del loop para el mensaje de error)
  const nombreHojaDefault = sheets[0]?.name || file.name.replace('.xlsx','').replace('.xls','');
 
  // Procesar cada hoja 
@@ -3603,7 +3604,7 @@ async function importarExcelBaqueano(file) {
 
  // Encabezado 
  // headers: { 'A': 'ide', 'B': 'fecha', 'C': 'ide', ... } (normalizados)
- const colMap = {}; // col-letter → header-name-normalizado
+ colMap = {}; // reiniciar por hoja
  rows[0].querySelectorAll('c').forEach(c => {
  const ref = (c.getAttribute('r') || '').replace(/\d+$/, '');
  const type = c.getAttribute('t') || '';
