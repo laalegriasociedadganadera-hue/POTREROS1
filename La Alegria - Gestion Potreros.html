@@ -1448,14 +1448,15 @@
  <div style="font-size:0.82em;color:#999;margin-top:4px">Para alimentación. El animal se sigue por su caravana; el potrero puede cambiar (pastoreo racional).</div>
  </div>
 
- <div style="border:2px dashed #cbd5e1;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:border-color 0.2s" 
+ <div style="border:2px dashed var(--verde);background:#f0f7f1;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s"
  onclick="document.getElementById('inputExcelBaqueano').click()"
  ondragover="event.preventDefault();this.style.borderColor='var(--azul)'"
- ondragleave="this.style.borderColor='#cbd5e1'"
- ondrop="event.preventDefault();this.style.borderColor='#cbd5e1';importarExcelBaqueano(event.dataTransfer.files[0])">
- <div style="font-size:2.5em;margin-bottom:8px"></div>
- <div style="font-weight:bold;color:var(--azul)">Tocá para seleccionar o arrastrá el Excel</div>
- <div style="font-size:0.85em;color:#999;margin-top:4px">Archivo .xlsx exportado desde Baqueano App</div>
+ ondragleave="this.style.borderColor='var(--verde)'"
+ ondrop="event.preventDefault();this.style.borderColor='var(--verde)';importarExcelBaqueano(event.dataTransfer.files[0])">
+ <div style="margin-bottom:10px"><i data-lucide="file-up" style="width:42px;height:42px;color:var(--verde)"></i></div>
+ <div style="font-weight:800;color:var(--verde);font-size:1.15em">Cargar caravanas</div>
+ <div style="font-weight:600;color:var(--azul);font-size:0.95em;margin-top:2px">Tocá para seleccionar o arrastrá el Excel</div>
+ <div style="font-size:0.85em;color:#777;margin-top:4px">Archivo .xlsx exportado desde Baqueano App</div>
  </div>
  <input type="file" id="inputExcelBaqueano" accept=".xlsx,.xls" style="display:none" onchange="importarExcelBaqueano(this.files[0])">
  <div id="caravanas-import-status" style="margin-top:12px;font-weight:bold;text-align:center"></div>
