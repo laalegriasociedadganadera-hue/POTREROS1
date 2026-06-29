@@ -2434,6 +2434,24 @@
  if (typeof window.guardarPotrerosRemoto === 'function') window.guardarPotrerosRemoto(potreros);
  }
 
+ // Puente para que el módulo Firebase lea/actualice los potreros centrales
+ window.obtenerPotreros = function() { return potreros; };
+ window.aplicarPotrerosRemoto = function(arr) {
+ if (!Array.isArray(arr) || !arr.length) return;
+ // Mantener el orden original de POTREROS_BASE (Firestore devuelve alfabético)
+ const orden = POTREROS_BASE.reduce((m, n, i) => { m[n] = i; return m; }, {});
+ arr.sort((a, b) => (orden[a.nombre] ?? 999) - (orden[b.nombre] ?? 999));
+ potreros = arr;
+ sanearPotreros();
+ localStorage.setItem('potreros_data_v6', JSON.stringify(potreros));
+ cargarSelectPotreros();
+ actualizarKPIs();
+ renderizarTarjetasPotreros();
+ renderizarResumenChico();
+ renderizarHeatmap();
+ if (typeof actualizarSelectoresPotreroCaravanas === 'function') actualizarSelectoresPotreroCaravanas();
+ };
+
  // ===== MAPA DE CALOR =====
  function renderizarHeatmap() {
  const container = document.getElementById('heatmapContainer');
@@ -4477,7 +4495,7 @@ function masivo_sacar() {
  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged }
  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
- import { getFirestore, doc, getDoc }
+ import { getFirestore, doc, getDoc, collection, onSnapshot, writeBatch }
  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
  const firebaseConfig = {
@@ -4496,6 +4514,38 @@ function masivo_sacar() {
  // Estado global del usuario (lo lee la auditoría de la app)
  window.usuarioActual = null;
 
+ // ===== BASE CENTRAL DE POTREROS (tiempo real) =====
+ const COL_POTREROS = 'potreros_estancia';
+ let syncIniciado = false;
+
+ // Guarda todos los potreros en la base central (un doc por potrero)
+ window.guardarPotrerosRemoto = async function(arr) {
+ if (!window.usuarioActual || !Array.isArray(arr) || !arr.length) return;
+ try {
+ const batch = writeBatch(db);
+ arr.forEach(p => { if (p && p.nombre) batch.set(doc(db, COL_POTREROS, p.nombre), p); });
+ await batch.commit();
+ } catch(e) {
+ console.error('Error guardando potreros en la base central:', e);
+ }
+ };
+
+ // Escucha cambios en tiempo real y los aplica a la app (servidor = fuente de verdad)
+ function iniciarSyncPotreros() {
+ if (syncIniciado) return;
+ syncIniciado = true;
+ onSnapshot(collection(db, COL_POTREROS), snap => {
+ if (snap.empty) {
+ // Base vacía → sembrar con la estructura base local
+ const base = window.obtenerPotreros ? window.obtenerPotreros() : [];
+ if (base && base.length) window.guardarPotrerosRemoto(base);
+ return;
+ }
+ const arr = snap.docs.map(d => d.data());
+ if (window.aplicarPotrerosRemoto) window.aplicarPotrerosRemoto(arr);
+ }, err => console.error('Error de sincronización de potreros:', err));
+ }
+
  onAuthStateChanged(auth, async user => {
  const logueado = document.getElementById('cuenta-logueado');
  const login    = document.getElementById('cuenta-login');
@@ -4509,6 +4559,7 @@ function masivo_sacar() {
  logueado.style.display = 'flex';
  }
  if (login) login.style.display = 'none';
+ iniciarSyncPotreros(); // arranca la base central al haber sesión
  } else {
  window.usuarioActual = null;
  if (logueado) logueado.style.display = 'none';
