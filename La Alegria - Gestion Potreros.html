@@ -1517,6 +1517,7 @@
  <option value="proxima"> Próxima a vencer</option>
  <option value="ok"> Al día</option>
  </select>
+ <button onclick="exportarTexto()" style="padding:10px 16px;background:var(--azul);color:white;border:none;border-radius:10px;font-weight:bold;cursor:pointer"><i data-lucide="file-text" style="width:25px;height:25px;vertical-align:middle;flex-shrink:0;margin-right:5px"></i> Exportar caravanas (texto)</button>
  <button onclick="limpiarCaravanas()" style="padding:10px 16px;background:#ef4444;color:white;border:none;border-radius:10px;font-weight:bold;cursor:pointer"><i data-lucide="trash-2" style="width:25px;height:25px;vertical-align:middle;flex-shrink:0;margin-right:5px"></i> Limpiar todo</button>
  </div>
  <div style="margin-top:10px;font-size:0.9em;color:#666" id="caravanas-resumen-texto"></div>
@@ -2555,6 +2556,32 @@
  link.download = `potreros_${fecha}.json`;
  link.click();
  mostrarToast(' JSON exportado');
+ }
+
+ // Exporta SOLO las caravanas (animales) en hoja de texto plano — para SNIG
+ function exportarTexto() {
+ const hoy = new Date().toLocaleDateString('es-UY');
+ const L = [];
+ L.push('LA ALEGRIA - LISTADO DE CARAVANAS');
+ L.push('Generado: ' + hoy);
+ L.push('');
+
+ const ids = Object.keys(caravanas);
+ if (!ids.length) { mostrarToast('No hay caravanas cargadas', 'error'); return; }
+
+ // Listado simple de todos los números de caravana
+ L.push('TOTAL DE CARAVANAS: ' + ids.length);
+ L.push('');
+ ids.sort().forEach(ide => L.push(ide));
+
+ const txt = L.join('\r\n');
+ const fecha = new Date().toISOString().split('T')[0];
+ const blob = new Blob([txt], { type: 'text/plain;charset=utf-8;' });
+ const link = document.createElement('a');
+ link.href = URL.createObjectURL(blob);
+ link.download = `caravanas_${fecha}.txt`;
+ link.click();
+ mostrarToast('Listado de caravanas exportado');
  }
 
  function imprimirReporte() {
