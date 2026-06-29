@@ -780,6 +780,23 @@
  .fade-in { animation: fadeIn 0.5s ease-in; }
  @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+ /* Marcadores tappables del mapa (optimizado para móvil) */
+ .marcador-potrero .pin {
+ display: flex; align-items: center; justify-content: center;
+ min-width: 40px; height: 40px; padding: 0 6px;
+ border-radius: 22px; border: 3px solid white;
+ color: white; font-weight: 800; font-size: 15px;
+ box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+ cursor: pointer; line-height: 1;
+ }
+ .marcador-potrero .pin.reciente {
+ animation: pulsoMarcador 1.4s ease-in-out infinite;
+ }
+ @keyframes pulsoMarcador {
+ 0%,100% { box-shadow: 0 3px 8px rgba(0,0,0,0.4), 0 0 0 0 rgba(232,163,61,0.7); }
+ 50%     { box-shadow: 0 3px 8px rgba(0,0,0,0.4), 0 0 0 10px rgba(232,163,61,0); }
+ }
+
  .export-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 
  @media (max-width: 768px) {
@@ -1647,13 +1664,14 @@
  else valorNuevo = cantidad;
 
  p[tipo] = valorNuevo;
+ p.editadoEn = Date.now();
  recalcularTotal(p);
  guardarPotreros();
 
  // Agregar al historial
  const movimiento = {
  id: nuevoId(),
- fecha: new Date().toLocaleString('es-ES'),
+ fecha: new Date().toLocaleString('es-UY'),
  fechaISO: new Date().toISOString(),
  potrero: potrero,
  tipo: tiposLabels[tipo],
@@ -1862,7 +1880,7 @@
  // Registrar el borrado antes de borrar
  const entradaBorrado = {
  id: nuevoId(),
- fecha: new Date().toLocaleString('es-ES'),
+ fecha: new Date().toLocaleString('es-UY'),
  fechaISO: new Date().toISOString(),
  potrero: '—',
  tipo: 'Registro completo',
@@ -2041,7 +2059,7 @@
  const items = [
  ['', totalAnimales.toLocaleString(), 'animales'],
  ['', ocupados + '/' + potreros.length, 'ocupados'],
- ['', totalHa.toLocaleString('es-ES',{maximumFractionDigits:0}), 'hectáreas']
+ ['', totalHa.toLocaleString('es-UY',{maximumFractionDigits:0}), 'hectáreas']
  ];
  cont.innerHTML = items.map(i => `
  <div style="flex:1;min-width:90px;background:rgba(255,255,255,0.95);border-radius:10px;padding:12px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.1)">
@@ -2145,7 +2163,7 @@
  const densidad = totalHa > 0 ? (totalAnimales / totalHa).toFixed(2) : 0;
 
  document.getElementById('kpi-total').textContent = totalAnimales.toLocaleString();
- document.getElementById('kpi-ha').textContent = totalHa.toLocaleString('es-ES', {maximumFractionDigits:0});
+ document.getElementById('kpi-ha').textContent = totalHa.toLocaleString('es-UY', {maximumFractionDigits:0});
  document.getElementById('kpi-densidad').textContent = densidad;
  document.getElementById('kpi-ocupados').textContent = ocupados;
  }
@@ -2369,6 +2387,7 @@
 
  function actualizarGanado(idx, campo, valor) {
  potreros[idx][campo] = parseInt(valor) || 0;
+ potreros[idx].editadoEn = Date.now();
  recalcularTotal(potreros[idx]);
  guardarPotreros();
  renderizarTarjetasPotreros();
@@ -2387,6 +2406,7 @@
  const cant = parseInt(document.getElementById('nueva-cant-' + idx).value) || 0;
  if (!tipo || cant <= 0) { mostrarToast('Elegí tipo y cantidad', 'error'); return; }
  potreros[idx][tipo] = (potreros[idx][tipo] || 0) + cant;
+ potreros[idx].editadoEn = Date.now();
  recalcularTotal(potreros[idx]);
  guardarPotreros();
  renderizarTarjetasPotreros();
@@ -2560,7 +2580,7 @@
  const filasPagos = pagos.map(p => `
  <tr>
  <td style="border:1px solid #ccc;padding:8px">${p.fecha}</td>
- <td style="border:1px solid #ccc;padding:8px;text-align:right">$${(p.monto||0).toLocaleString('es-AR',{minimumFractionDigits:2})}</td>
+ <td style="border:1px solid #ccc;padding:8px;text-align:right">$${(p.monto||0).toLocaleString('es-UY',{minimumFractionDigits:2})}</td>
  <td style="border:1px solid #ccc;padding:8px">${p.tipo}</td>
  <td style="border:1px solid #ccc;padding:8px">${p.nota||''}</td>
  </tr>`).join('');
@@ -2582,16 +2602,16 @@
  ${t.datos.nombre ? `<div class="dato"><strong>Nombre/Apelativo:</strong> ${t.datos.nombre}</div>` : ''}
  ${t.datos.cuenta ? `<div class="dato"><strong>Cuenta/CBU:</strong> ${t.datos.cuenta}</div>` : ''}
  ${t.datos.telefono ? `<div class="dato"><strong>Teléfono:</strong> ${t.datos.telefono}</div>` : ''}
- <div class="dato"><strong>Presupuesto:</strong> $${(t.presupuesto||0).toLocaleString('es-AR',{minimumFractionDigits:2})}</div>
+ <div class="dato"><strong>Presupuesto:</strong> $${(t.presupuesto||0).toLocaleString('es-UY',{minimumFractionDigits:2})}</div>
  <h3>Récord de Pagos</h3>
  <table>
  <thead><tr><th>Fecha</th><th>Monto</th><th>Tipo</th><th>Razón</th></tr></thead>
  <tbody>${filasPagos || '<tr><td colspan="4" style="padding:8px;text-align:center;border:1px solid #ccc">Sin pagos registrados</td></tr>'}</tbody>
  </table>
- <div class="dato"><strong>Total pagado:</strong> $${totalPagado.toLocaleString('es-AR',{minimumFractionDigits:2})}</div>
- <div class="saldo">SALDO POR COBRAR: $${saldo.toLocaleString('es-AR',{minimumFractionDigits:2})}${pctFalta !== null ? ` (falta el ${pctFalta}%)` : ''}</div>
+ <div class="dato"><strong>Total pagado:</strong> $${totalPagado.toLocaleString('es-UY',{minimumFractionDigits:2})}</div>
+ <div class="saldo">SALDO POR COBRAR: $${saldo.toLocaleString('es-UY',{minimumFractionDigits:2})}${pctFalta !== null ? ` (falta el ${pctFalta}%)` : ''}</div>
  ${t.notas ? `<div style="margin-top:20px"><strong>Notas:</strong><br>${t.notas.replace(/\\n/g,'<br>')}</div>` : ''}
- <div style="margin-top:30px;font-size:0.85em;color:#666">Estado: ${t.pagado ? 'SALDADO' : 'PENDIENTE'} — Generado ${new Date().toLocaleDateString('es-AR')}</div>
+ <div style="margin-top:30px;font-size:0.85em;color:#666">Estado: ${t.pagado ? 'SALDADO' : 'PENDIENTE'} — Generado ${new Date().toLocaleDateString('es-UY')}</div>
  </body></html>`);
  win.document.close();
  setTimeout(() => win.print(), 300);
@@ -2689,7 +2709,7 @@ function renderizarTrabajadores() {
  <div style="background:white;border-radius:10px;margin-bottom:15px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1)">
  <button onclick="toggleTrabajador(${t.id})" style="width:100%;background:var(--azul);color:white;border:none;padding:15px;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:bold;gap:10px">
  <span style="flex:1">${t.nombre}</span>
- <span style="font-size:0.85em;white-space:nowrap">Saldo: $${saldo.toLocaleString('es-AR', {minimumFractionDigits:2})}${pctFalta !== null ? ` (${pctFalta}%)` : ''}</span>
+ <span style="font-size:0.85em;white-space:nowrap">Saldo: $${saldo.toLocaleString('es-UY', {minimumFractionDigits:2})}${pctFalta !== null ? ` (${pctFalta}%)` : ''}</span>
  <span>${t.expandido ? '' : ''}</span>
  </button>
  ${t.expandido ? generarContenidoTrabajador(t) : ''}
@@ -2767,7 +2787,7 @@ function generarContenidoTrabajador(t) {
  <!-- Saldo -->
  <div style="background:var(--verde);color:white;padding:15px;border-radius:5px;margin-bottom:20px;text-align:center">
  <div style="font-size:0.9em;opacity:0.9">SALDO POR COBRAR</div>
- <div style="font-size:2em;font-weight:bold">$${saldo.toLocaleString('es-AR', {minimumFractionDigits:2})}</div>
+ <div style="font-size:2em;font-weight:bold">$${saldo.toLocaleString('es-UY', {minimumFractionDigits:2})}</div>
  ${pctFalta !== null ? `<div style="font-size:1em;opacity:0.95">Le falta cobrar el ${pctFalta}% del presupuesto</div>` : ''}
  </div>
 
@@ -3234,18 +3254,29 @@ function dibujarCapa(entrada) {
  <div class="popup-header">${nombre}</div>
  <div class="popup-body">${cuerpo}</div>
  `;
- layer.bindPopup(popupHtml, { maxWidth: 360, minWidth: 280, closeButton: true });
+ const popupOpts = { maxWidth: 360, minWidth: 280, closeButton: true, autoPan: true, autoPanPadding: [30, 60] };
+ layer.bindPopup(popupHtml, popupOpts);
 
- if (datos.total > 0 && layer.getBounds) {
- const center = layer.getBounds().getCenter();
+ // Marcador tappable: aparece en cada potrero con animales (rojo) o recién editado (ámbar)
+ if (layer.getBounds) {
+ const reciente = p && p.editadoEn && (Date.now() - p.editadoEn < 18 * 3600 * 1000);
+ const tieneAnimales = datos.total > 0;
+ if (tieneAnimales || reciente) {
+ let center;
+ try { center = layer.getCenter(); } catch(e) { center = layer.getBounds().getCenter(); }
+ const bg = reciente ? '#e8a33d' : '#dc2626';
+ const contenido = tieneAnimales ? datos.total : '&#9679;';
  const m = L.marker(center, {
  icon: L.divIcon({
- className: 'etiqueta-potrero',
- html: `<div style="background:#dc2626;color:white;padding:3px 8px;border-radius:12px;font-weight:bold;font-size:11px;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,0.3)">${datos.total}</div>`,
- iconSize: null
+ className: 'marcador-potrero',
+ html: `<div class="pin ${reciente ? 'reciente' : ''}" style="background:${bg}">${contenido}</div>`,
+ iconSize: [40, 40],
+ iconAnchor: [20, 20]
  })
  }).addTo(mapaPlano);
+ m.bindPopup(popupHtml, popupOpts); // tocar el icono abre el globo
  marcadores.push(m);
+ }
  }
  }
  }).addTo(mapaPlano);
@@ -4074,7 +4105,7 @@ function cambiarEstadoLote(grupoId, nuevoEstado) {
  if (!confirm(msgs[nuevoEstado])) return;
 
  g.estado = nuevoEstado;
- g.estadoFecha = new Date().toLocaleDateString('es-ES');
+ g.estadoFecha = new Date().toLocaleDateString('es-UY');
 
  // Cancelar recordatorios si se vende o da de baja
  if (nuevoEstado === 'vendido' || nuevoEstado === 'baja') {
@@ -4244,7 +4275,7 @@ function generarCaravanaCardHTML(ide, datos, opts) {
  const dias = Math.floor((vence - new Date()) / 86400000);
  const est = estadoVacuna(datos.vacunas[vac], vac);
  return `<div class="detalle-row">
- <span><strong>${vac}</strong> — ${f.toLocaleDateString('es-ES')}</span>
+ <span><strong>${vac}</strong> — ${f.toLocaleDateString('es-UY')}</span>
  <span style="color:${color[est]||'#666'};font-weight:bold">${dias < 0 ? `Venció hace ${Math.abs(dias)} días` : `Vence en ${dias} días`}</span>
  </div>`;
  }).join('');
@@ -4260,7 +4291,7 @@ function generarCaravanaCardHTML(ide, datos, opts) {
  if (l.sanidad) partes.push(` ${l.sanidad}`);
  if (l.obs) partes.push(` ${l.obs}`);
  return `<div class="detalle-row">
- <span style="color:#94a3b8;font-size:0.9em">${l.fecha ? new Date(l.fecha).toLocaleDateString('es-ES') : '—'}${l.sesion ? ` · ${l.sesion}` : ''}</span>
+ <span style="color:#94a3b8;font-size:0.9em">${l.fecha ? new Date(l.fecha).toLocaleDateString('es-UY') : '—'}${l.sesion ? ` · ${l.sesion}` : ''}</span>
  <span style="font-weight:600">${partes.join(' · ') || '—'}</span>
  </div>`;
  }).join('');

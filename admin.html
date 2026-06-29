@@ -370,7 +370,7 @@ function cargarDatos() {
         if (snap.empty) { tbody.innerHTML = '<tr><td colspan="4" class="empty">Sin PINs generados</td></tr>'; return; }
         tbody.innerHTML = snap.docs.map(d => {
             const p = d.data();
-            const fecha = p.creadoEn ? new Date(p.creadoEn.seconds*1000).toLocaleDateString('es-AR') : '—';
+            const fecha = p.creadoEn ? new Date(p.creadoEn.seconds*1000).toLocaleDateString('es-UY') : '—';
             const badge = p.usado
                 ? `<span class="badge badge-usado">Usado</span>`
                 : `<span class="badge badge-libre">Libre</span>`;
