@@ -255,7 +255,7 @@
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut }
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -273,50 +273,7 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-// ── Al cargar: procesar resultado de redirect ────────────────
-(async () => {
-    try {
-        const result = await getRedirectResult(auth);
-        if (!result) return;
-
-        const user    = result.user;
-        const pinUsado = new URLSearchParams(window.location.search).get('pin')
-            || sessionStorage.getItem('pin_acceso')
-            || localStorage.getItem('pin_acceso');
-        const userRef  = doc(db, 'usuarios', user.uid);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists()) {
-            const estado = userSnap.data().estado;
-            if (estado === 'aprobado') {
-                irPaso('paso-aprobado');
-                setTimeout(() => { window.location.href = 'descarga.html'; }, 1500);
-            } else {
-                document.getElementById('email-pendiente').textContent = user.email;
-                irPaso('paso-pendiente');
-            }
-        } else if (pinUsado) {
-            await updateDoc(doc(db, 'pins', pinUsado), { usado: true, usadoPor: user.email, usadoEn: serverTimestamp() });
-            await setDoc(userRef, {
-                uid:      user.uid,
-                nombre:   user.displayName,
-                email:    user.email,
-                foto:     user.photoURL,
-                estado:   'pendiente',
-                creadoEn: serverTimestamp(),
-            });
-            sessionStorage.removeItem('pin_acceso');
-            localStorage.removeItem('pin_acceso');
-            document.getElementById('email-pendiente').textContent = user.email;
-            irPaso('paso-pendiente');
-        } else {
-            // Volvió sin PIN (sesión previa) — verificar estado
-            irPaso('paso-pin');
-        }
-    } catch(e) {
-        console.error(e);
-    }
-})();
+let pinValidado = null;
 
 // ── Validar PIN ──────────────────────────────────────────────
 window.validarPin = async function() {
@@ -336,12 +293,7 @@ window.validarPin = async function() {
         } else if (snap.data().usado) {
             mostrarMsg(msg, 'error', 'Este PIN ya fue utilizado.');
         } else {
-            sessionStorage.setItem('pin_acceso', pin);
-            localStorage.setItem('pin_acceso', pin);
-            // Agregar PIN a la URL para que sobreviva el redirect
-            const url = new URL(window.location.href);
-            url.searchParams.set('pin', pin);
-            window.history.replaceState({}, '', url);
+            pinValidado = pin;
             irPaso('paso-google');
         }
     } catch(e) {
@@ -352,9 +304,48 @@ window.validarPin = async function() {
     btn.innerHTML = 'Continuar';
 };
 
-// ── Login Google ─────────────────────────────────────────────
+// ── Login Google (popup) ─────────────────────────────────────
 window.loginGoogle = async function() {
-    await signInWithRedirect(auth, new GoogleAuthProvider());
+    const msg = document.getElementById('msg-google');
+    const btn = document.getElementById('btn-google');
+    btn.disabled = true;
+
+    try {
+        const result = await signInWithPopup(auth, new GoogleAuthProvider());
+        const user   = result.user;
+
+        const userRef  = doc(db, 'usuarios', user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+            const estado = userSnap.data().estado;
+            if (estado === 'aprobado') {
+                irPaso('paso-aprobado');
+                setTimeout(() => { window.location.href = 'descarga.html'; }, 1500);
+            } else {
+                document.getElementById('email-pendiente').textContent = user.email;
+                irPaso('paso-pendiente');
+            }
+        } else {
+            if (pinValidado) {
+                await updateDoc(doc(db, 'pins', pinValidado), { usado: true, usadoPor: user.email, usadoEn: serverTimestamp() });
+            }
+            await setDoc(userRef, {
+                uid:      user.uid,
+                nombre:   user.displayName,
+                email:    user.email,
+                foto:     user.photoURL,
+                estado:   'pendiente',
+                creadoEn: serverTimestamp(),
+            });
+            document.getElementById('email-pendiente').textContent = user.email;
+            irPaso('paso-pendiente');
+        }
+    } catch(e) {
+        console.error(e);
+        mostrarMsg(msg, 'error', 'Error al conectar con Google. Intentá de nuevo.');
+        btn.disabled = false;
+    }
 };
 
 window.cerrarSesionFirebase = async function() {
