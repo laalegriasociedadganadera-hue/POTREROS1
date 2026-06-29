@@ -261,7 +261,7 @@
 
     <!-- Usuarios pendientes -->
     <div class="section">
-        <h2>Usuarios pendientes de aprobación</h2>
+        <h2>Usuarios pendientes de aprobación <span id="badge-pendientes" style="display:none;align-items:center;justify-content:center;background:#dc2626;color:white;border-radius:20px;min-width:24px;height:24px;padding:0 8px;font-size:0.72em;margin-left:6px">0</span></h2>
         <table>
             <thead><tr><th>Nombre</th><th>Email</th><th>Estado</th><th>Acciones</th></tr></thead>
             <tbody id="tabla-pendientes"><tr><td colspan="4" class="empty">Cargando...</td></tr></tbody>
@@ -286,7 +286,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut, onAuthStateChanged }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, getDocs,
-         orderBy, query, serverTimestamp }
+         orderBy, query, serverTimestamp, onSnapshot }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const ADMIN_EMAIL = 'laalegriasociedadganadera@gmail.com';
@@ -351,51 +351,61 @@ window.generarPin = async function() {
     document.getElementById('pin-valor').textContent = pin;
     document.getElementById('pin-nuevo').style.display = 'inline-flex';
     toast('PIN generado: ' + pin, 'ok');
-    cargarPins();
+    // La tabla de PINs se actualiza sola por onSnapshot
 };
 
 window.copiarPin = function() {
     if (ultimoPin) navigator.clipboard.writeText(ultimoPin).then(() => toast('PIN copiado', 'ok'));
 };
 
-// ── Cargar datos ─────────────────────────────────────────────
-async function cargarDatos() {
-    await Promise.all([cargarPins(), cargarUsuarios()]);
+// ── Cargar datos (en tiempo real) ────────────────────────────
+let suscrito = false;
+function cargarDatos() {
+    if (suscrito) return;
+    suscrito = true;
+
+    // PINs en vivo
+    onSnapshot(query(collection(db, 'pins'), orderBy('creadoEn', 'desc')), snap => {
+        const tbody = document.getElementById('tabla-pins');
+        if (snap.empty) { tbody.innerHTML = '<tr><td colspan="4" class="empty">Sin PINs generados</td></tr>'; return; }
+        tbody.innerHTML = snap.docs.map(d => {
+            const p = d.data();
+            const fecha = p.creadoEn ? new Date(p.creadoEn.seconds*1000).toLocaleDateString('es-AR') : '—';
+            const badge = p.usado
+                ? `<span class="badge badge-usado">Usado</span>`
+                : `<span class="badge badge-libre">Libre</span>`;
+            return `<tr><td><strong>${d.id}</strong></td><td>${badge}</td><td>${p.usadoPor || '—'}</td><td>${fecha}</td></tr>`;
+        }).join('');
+    });
+
+    // Usuarios en vivo — el admin ve las solicitudes apenas llegan
+    onSnapshot(query(collection(db, 'usuarios'), orderBy('creadoEn', 'desc')), snap => {
+        const tbodyP = document.getElementById('tabla-pendientes');
+        const tbodyT = document.getElementById('tabla-usuarios');
+
+        const pendientes = snap.docs.filter(d => d.data().estado === 'pendiente');
+        const todos      = snap.docs;
+
+        tbodyP.innerHTML = pendientes.length
+            ? pendientes.map(d => filaUsuario(d)).join('')
+            : '<tr><td colspan="4" class="empty">Sin usuarios pendientes</td></tr>';
+
+        tbodyT.innerHTML = todos.length
+            ? todos.map(d => filaUsuario(d)).join('')
+            : '<tr><td colspan="4" class="empty">Sin usuarios registrados</td></tr>';
+
+        actualizarBadgePendientes(pendientes.length);
+    });
 }
 
-async function cargarPins() {
-    const snap = await getDocs(query(collection(db, 'pins'), orderBy('creadoEn', 'desc')));
-    const tbody = document.getElementById('tabla-pins');
-    if (snap.empty) { tbody.innerHTML = '<tr><td colspan="4" class="empty">Sin PINs generados</td></tr>'; return; }
-    tbody.innerHTML = snap.docs.map(d => {
-        const p = d.data();
-        const fecha = p.creadoEn ? new Date(p.creadoEn.seconds*1000).toLocaleDateString('es-AR') : '—';
-        const badge = p.usado
-            ? `<span class="badge badge-usado">Usado</span>`
-            : `<span class="badge badge-libre">Libre</span>`;
-        return `<tr><td><strong>${d.id}</strong></td><td>${badge}</td><td>${p.usadoPor || '—'}</td><td>${fecha}</td></tr>`;
-    }).join('');
-}
-
-async function cargarUsuarios() {
-    const snap = await getDocs(query(collection(db, 'usuarios'), orderBy('creadoEn', 'desc')));
-    const tbodyP = document.getElementById('tabla-pendientes');
-    const tbodyT = document.getElementById('tabla-usuarios');
-
-    if (snap.empty) {
-        tbodyP.innerHTML = '<tr><td colspan="4" class="empty">Sin usuarios pendientes</td></tr>';
-        tbodyT.innerHTML = '<tr><td colspan="4" class="empty">Sin usuarios registrados</td></tr>';
-        return;
+// Muestra cuántos esperan aprobación (en el título y un contador visible)
+function actualizarBadgePendientes(n) {
+    document.title = n > 0 ? `(${n}) La Alegría — Admin` : 'La Alegría — Admin';
+    const badge = document.getElementById('badge-pendientes');
+    if (badge) {
+        badge.textContent = n;
+        badge.style.display = n > 0 ? 'inline-flex' : 'none';
     }
-
-    const pendientes = snap.docs.filter(d => d.data().estado === 'pendiente');
-    const todos      = snap.docs;
-
-    tbodyP.innerHTML = pendientes.length
-        ? pendientes.map(d => filaUsuario(d)).join('')
-        : '<tr><td colspan="4" class="empty">Sin usuarios pendientes</td></tr>';
-
-    tbodyT.innerHTML = todos.map(d => filaUsuario(d)).join('');
 }
 
 function filaUsuario(d) {
@@ -427,7 +437,7 @@ function filaUsuario(d) {
 window.cambiarEstado = async function(uid, nuevoEstado) {
     await updateDoc(doc(db, 'usuarios', uid), { estado: nuevoEstado });
     toast(nuevoEstado === 'aprobado' ? 'Usuario aprobado' : 'Acceso revocado', 'ok');
-    cargarUsuarios();
+    // La lista se actualiza sola por onSnapshot
 };
 
 // ── Toast ────────────────────────────────────────────────────
