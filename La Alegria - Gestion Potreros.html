@@ -1145,6 +1145,10 @@
  <button onclick="cerrarSesionApp()" title="Cerrar sesión" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:#fca5a5;width:40px;height:40px;border-radius:9px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center"><i data-lucide="log-out" style="width:21px;height:21px"></i></button>
  </div>
  <button id="cuenta-login" class="nav-tab" style="display:none" onclick="iniciarSesionApp()"><i data-lucide="log-in" style="width:25px;height:25px;vertical-align:middle;flex-shrink:0;margin-right:5px"></i> Iniciar sesión</button>
+ <div id="sync-estado" style="display:none;align-items:center;gap:7px;padding:6px 12px;font-size:0.78em;color:rgba(255,255,255,0.5)">
+ <span id="sync-punto" style="width:9px;height:9px;border-radius:50%;background:#22c55e;flex-shrink:0"></span>
+ <span id="sync-texto">Sincronizado</span>
+ </div>
  </div>
  </div>
 
@@ -4523,7 +4527,8 @@ function masivo_sacar() {
  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged }
  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
- import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot, writeBatch, serverTimestamp }
+ import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
+ doc, getDoc, setDoc, collection, onSnapshot, writeBatch, serverTimestamp }
  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
  const firebaseConfig = {
@@ -4537,7 +4542,10 @@ function masivo_sacar() {
 
  const app  = initializeApp(firebaseConfig);
  const auth = getAuth(app);
- const db   = getFirestore(app);
+ // Persistencia offline: la app sigue funcionando sin señal y sincroniza al volver
+ const db = initializeFirestore(app, {
+ localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+ });
 
  // Estado global del usuario (lo lee la auditoría de la app)
  window.usuarioActual = null;
@@ -4545,6 +4553,22 @@ function masivo_sacar() {
  // ===== BASE CENTRAL DE POTREROS (tiempo real) =====
  const COL_POTREROS = 'potreros_estancia';
  let syncIniciado = false;
+
+ // Indicador visual de sincronización
+ function actualizarSyncEstado(meta) {
+ const cont  = document.getElementById('sync-estado');
+ const punto = document.getElementById('sync-punto');
+ const texto = document.getElementById('sync-texto');
+ if (!cont || !punto || !texto) return;
+ cont.style.display = 'flex';
+ if (meta && meta.hasPendingWrites) {
+ punto.style.background = '#e8a33d'; texto.textContent = 'Guardando...';
+ } else if (meta && meta.fromCache) {
+ punto.style.background = '#94a3b8'; texto.textContent = 'Sin conexión (offline)';
+ } else {
+ punto.style.background = '#22c55e'; texto.textContent = 'Sincronizado';
+ }
+ }
 
  // Guarda todos los potreros en la base central (un doc por potrero)
  window.guardarPotrerosRemoto = async function(arr) {
@@ -4589,7 +4613,8 @@ function masivo_sacar() {
  syncIniciado = true;
 
  // Potreros — un documento por potrero (edición concurrente segura por potrero)
- onSnapshot(collection(db, COL_POTREROS), snap => {
+ onSnapshot(collection(db, COL_POTREROS), { includeMetadataChanges: true }, snap => {
+ actualizarSyncEstado(snap.metadata);
  if (snap.empty) {
  const base = window.obtenerPotreros ? window.obtenerPotreros() : [];
  if (base && base.length) window.guardarPotrerosRemoto(base);
