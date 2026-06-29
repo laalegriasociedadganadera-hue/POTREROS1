@@ -209,6 +209,7 @@
                oninput="this.value=this.value.toUpperCase()"
                onkeydown="if(event.key==='Enter')validarPin()">
         <button class="btn-primary" onclick="validarPin()" id="btn-validar-pin">Continuar</button>
+        <button class="btn-link" onclick="loginExistente()">Ya estoy registrado, iniciar sesión</button>
     </div>
 
     <!-- PASO 2: conectar con Google -->
@@ -345,6 +346,37 @@ window.loginGoogle = async function() {
         console.error(e);
         mostrarMsg(msg, 'error', 'Error al conectar con Google. Intentá de nuevo.');
         btn.disabled = false;
+    }
+};
+
+// ── Login de usuario ya registrado (sin PIN) ─────────────────
+window.loginExistente = async function() {
+    const msg = document.getElementById('msg-pin');
+    try {
+        const result   = await signInWithPopup(auth, new GoogleAuthProvider());
+        const user     = result.user;
+        const userSnap = await getDoc(doc(db, 'usuarios', user.uid));
+
+        if (!userSnap.exists()) {
+            await signOut(auth);
+            mostrarMsg(msg, 'error', 'Esta cuenta no está registrada. Ingresá un PIN para registrarte.');
+            return;
+        }
+
+        const estado = userSnap.data().estado;
+        if (estado === 'aprobado') {
+            irPaso('paso-aprobado');
+            setTimeout(() => { window.location.href = 'descarga.html'; }, 1500);
+        } else if (estado === 'rechazado') {
+            await signOut(auth);
+            mostrarMsg(msg, 'error', 'Tu acceso fue rechazado. Contactá al administrador.');
+        } else {
+            document.getElementById('email-pendiente').textContent = user.email;
+            irPaso('paso-pendiente');
+        }
+    } catch(e) {
+        console.error(e);
+        mostrarMsg(msg, 'error', 'Error al iniciar sesión. Intentá de nuevo.');
     }
 };
 
