@@ -280,7 +280,9 @@ const db   = getFirestore(app);
         if (!result) return;
 
         const user    = result.user;
-        const pinUsado = sessionStorage.getItem('pin_acceso') || localStorage.getItem('pin_acceso');
+        const pinUsado = new URLSearchParams(window.location.search).get('pin')
+            || sessionStorage.getItem('pin_acceso')
+            || localStorage.getItem('pin_acceso');
         const userRef  = doc(db, 'usuarios', user.uid);
         const userSnap = await getDoc(userRef);
 
@@ -336,6 +338,10 @@ window.validarPin = async function() {
         } else {
             sessionStorage.setItem('pin_acceso', pin);
             localStorage.setItem('pin_acceso', pin);
+            // Agregar PIN a la URL para que sobreviva el redirect
+            const url = new URL(window.location.href);
+            url.searchParams.set('pin', pin);
+            window.history.replaceState({}, '', url);
             irPaso('paso-google');
         }
     } catch(e) {
