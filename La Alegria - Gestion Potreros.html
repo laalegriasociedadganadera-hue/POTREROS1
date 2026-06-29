@@ -158,6 +158,10 @@
  transition: background 0.2s;
  width: 100%;
  min-height: 56px;
+ display: flex;
+ align-items: center;
+ gap: 4px;
+ line-height: 1.2;
  }
  .nav-tab:hover, .nav-tab.active {
  background: rgba(255,255,255,0.1);
@@ -1125,10 +1129,23 @@
  <button class="nav-tab" onclick="showTab('mapa')"><i data-lucide="map" style="width:25px;height:25px;vertical-align:middle;flex-shrink:0;margin-right:5px"></i> Mapa de Calor</button>
  <button class="nav-tab" onclick="cerrarMenu(); abrirPlano()"><i data-lucide="map-pin" style="width:25px;height:25px;vertical-align:middle;flex-shrink:0;margin-right:5px"></i> Ver Plano (KMZ)</button>
  <button class="nav-tab" onclick="showTab('inventario')"><i data-lucide="table" style="width:25px;height:25px;vertical-align:middle;flex-shrink:0;margin-right:5px"></i> Inventario (Excel)</button>
- <button class="nav-tab" onclick="showTab('actividades')"><i data-lucide="clipboard-list" style="width:25px;height:25px;vertical-align:middle;flex-shrink:0;margin-right:5px"></i> Registro de Actividades</button>
+ <button class="nav-tab" onclick="showTab('actividades')"><i data-lucide="clipboard-list" style="width:25px;height:25px;vertical-align:middle;flex-shrink:0;margin-right:5px"></i> <span>Registro de<br>Actividades</span></button>
  <button class="nav-tab" onclick="showTab('reportes')"><i data-lucide="trending-up" style="width:25px;height:25px;vertical-align:middle;flex-shrink:0;margin-right:5px"></i> Reportes</button>
  <button class="nav-tab" onclick="showTab('rrhh')"><i data-lucide="briefcase" style="width:25px;height:25px;vertical-align:middle;flex-shrink:0;margin-right:5px"></i> RRHH / Gastos</button>
  <button class="nav-tab" onclick="showTab('caravanas')"><i data-lucide="tag" style="width:25px;height:25px;vertical-align:middle;flex-shrink:0;margin-right:5px"></i> Caravanas</button>
+
+ <!-- ===== CUENTA GOOGLE ===== -->
+ <div id="cuenta-menu" style="margin-top:20px;border-top:1px solid rgba(255,255,255,0.12);padding-top:14px">
+ <div id="cuenta-logueado" style="display:none;align-items:center;gap:10px;padding:8px 12px">
+ <img id="cuenta-foto" src="" alt="" style="width:38px;height:38px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,0.2)">
+ <div style="flex:1;overflow:hidden;min-width:0">
+ <div id="cuenta-nombre" style="color:white;font-weight:700;font-size:0.92em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+ <div id="cuenta-email" style="color:rgba(255,255,255,0.5);font-size:0.78em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+ </div>
+ <button onclick="cerrarSesionApp()" title="Cerrar sesión" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:#fca5a5;width:40px;height:40px;border-radius:9px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center"><i data-lucide="log-out" style="width:21px;height:21px"></i></button>
+ </div>
+ <button id="cuenta-login" class="nav-tab" style="display:none" onclick="iniciarSesionApp()"><i data-lucide="log-in" style="width:25px;height:25px;vertical-align:middle;flex-shrink:0;margin-right:5px"></i> Iniciar sesión</button>
+ </div>
  </div>
 
  <!-- ===== BÚSQUEDA GLOBAL (desplegable) ===== -->
@@ -1640,7 +1657,7 @@
  operacion: operacion,
  valorAnterior: valorAnterior,
  valorNuevo: valorNuevo,
- usuario: 'local' // → reemplazar por usuario de Supabase Auth
+ usuario: (window.usuarioActual || 'local')
  };
  historial.unshift(movimiento);
  guardarHistorial();
@@ -1840,7 +1857,7 @@
  operacion: 'borrado',
  valorAnterior: historial.length,
  valorNuevo: 0,
- usuario: 'admin (local)'
+ usuario: (window.usuarioActual || 'admin (local)')
  };
  historial = [entradaBorrado];
  guardarHistorial();
@@ -4115,7 +4132,7 @@ function confirmarSacarCaravana(ide, grupoId) {
 
  // Registrar baja en la caravana
  if (!Array.isArray(d.bajas)) d.bajas = [];
- d.bajas.push({ grupoId, grupoNombre: g.nombre, motivo, detalle, fecha, usuario: 'local' });
+ d.bajas.push({ grupoId, grupoNombre: g.nombre, motivo, detalle, fecha, usuario: (window.usuarioActual || 'local') });
 
  // Quitar del grupo
  g.caravanas = g.caravanas.filter(x => x !== ide);
@@ -4376,7 +4393,7 @@ function masivo_vender() {
  ids.forEach(ide => {
  if (!caravanas[ide]) return;
  if (!Array.isArray(caravanas[ide].bajas)) caravanas[ide].bajas = [];
- caravanas[ide].bajas.push({ grupoId: grupoActivo||'', grupoNombre: grupoActivo?(gruposManejo[grupoActivo]?.nombre||''):'', motivo:'Venta individual', detalle, fecha, usuario:'local' });
+ caravanas[ide].bajas.push({ grupoId: grupoActivo||'', grupoNombre: grupoActivo?(gruposManejo[grupoActivo]?.nombre||''):'', motivo:'Venta individual', detalle, fecha, usuario: (window.usuarioActual || 'local') });
  caravanas[ide].recordatorioPropio = '';
  caravanas[ide].recordatorioHeredado = '';
  if (grupoActivo && gruposManejo[grupoActivo]) gruposManejo[grupoActivo].caravanas = gruposManejo[grupoActivo].caravanas.filter(x => x !== ide);
@@ -4407,7 +4424,7 @@ function masivo_baja() {
  ids.forEach(ide => {
  if (!caravanas[ide]) return;
  if (!Array.isArray(caravanas[ide].bajas)) caravanas[ide].bajas = [];
- caravanas[ide].bajas.push({ grupoId: grupoActivo||'', grupoNombre: grupoActivo?(gruposManejo[grupoActivo]?.nombre||''):'', motivo, detalle, fecha, usuario:'local' });
+ caravanas[ide].bajas.push({ grupoId: grupoActivo||'', grupoNombre: grupoActivo?(gruposManejo[grupoActivo]?.nombre||''):'', motivo, detalle, fecha, usuario: (window.usuarioActual || 'local') });
  caravanas[ide].recordatorioPropio = '';
  caravanas[ide].recordatorioHeredado = '';
  if (grupoActivo && gruposManejo[grupoActivo]) gruposManejo[grupoActivo].caravanas = gruposManejo[grupoActivo].caravanas.filter(x => x !== ide);
@@ -4441,7 +4458,7 @@ function masivo_sacar() {
  ids.forEach(ide => {
  if (!caravanas[ide]) return;
  if (!Array.isArray(caravanas[ide].bajas)) caravanas[ide].bajas = [];
- caravanas[ide].bajas.push({ grupoId: grupoActivo, grupoNombre: g?.nombre||'', motivo, detalle, fecha, usuario:'local' });
+ caravanas[ide].bajas.push({ grupoId: grupoActivo, grupoNombre: g?.nombre||'', motivo, detalle, fecha, usuario: (window.usuarioActual || 'local') });
  caravanas[ide].recordatorioHeredado = '';
  if (g) g.caravanas = g.caravanas.filter(x => x !== ide);
  });
@@ -4451,6 +4468,66 @@ function masivo_sacar() {
  );
 }
 
+ </script>
+
+ <!-- ===== FIREBASE AUTH — registro de quién usa la app ===== -->
+ <script type="module">
+ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+ import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged }
+ from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+ import { getFirestore, doc, getDoc }
+ from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+ const firebaseConfig = {
+ apiKey: "AIzaSyBVIC-_CrjcbRvMnY-qcyMl_tzDfph8H3E",
+ authDomain: "laalegria-78b04.firebaseapp.com",
+ projectId: "laalegria-78b04",
+ storageBucket: "laalegria-78b04.firebasestorage.app",
+ messagingSenderId: "766520476219",
+ appId: "1:766520476219:web:72c1edbc1d12063cecd21e"
+ };
+
+ const app  = initializeApp(firebaseConfig);
+ const auth = getAuth(app);
+ const db   = getFirestore(app);
+
+ // Estado global del usuario (lo lee la auditoría de la app)
+ window.usuarioActual = null;
+
+ onAuthStateChanged(auth, async user => {
+ const logueado = document.getElementById('cuenta-logueado');
+ const login    = document.getElementById('cuenta-login');
+
+ if (user) {
+ window.usuarioActual = user.displayName || user.email;
+ if (logueado) {
+ document.getElementById('cuenta-foto').src = user.photoURL || '';
+ document.getElementById('cuenta-nombre').textContent = user.displayName || 'Usuario';
+ document.getElementById('cuenta-email').textContent  = user.email;
+ logueado.style.display = 'flex';
+ }
+ if (login) login.style.display = 'none';
+ } else {
+ window.usuarioActual = null;
+ if (logueado) logueado.style.display = 'none';
+ if (login) login.style.display = 'flex';
+ }
+ if (window.lucide) lucide.createIcons();
+ });
+
+ window.iniciarSesionApp = async function() {
+ try {
+ await signInWithPopup(auth, new GoogleAuthProvider());
+ } catch(e) {
+ console.error(e);
+ if (window.mostrarToast) mostrarToast('No se pudo iniciar sesión', 'error');
+ }
+ };
+
+ window.cerrarSesionApp = async function() {
+ await signOut(auth);
+ if (window.mostrarToast) mostrarToast('Sesión cerrada');
+ };
  </script>
 </body>
 </html>
