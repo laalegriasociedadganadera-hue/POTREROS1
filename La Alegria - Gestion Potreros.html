@@ -1794,7 +1794,16 @@
  // ===== REGISTRO DE ACTIVIDADES (AUDITORÍA INMUTABLE) =====
  function guardarHistorial() {
  localStorage.setItem('potreros_historial_v6', JSON.stringify(historial));
+ if (typeof window.guardarBlobRemoto === 'function') window.guardarBlobRemoto('historial', historial);
  }
+ // Puente: el módulo Firebase aplica el historial central
+ window.aplicarHistorialRemoto = function(arr) {
+ if (!Array.isArray(arr)) return;
+ historial = arr;
+ localStorage.setItem('potreros_historial_v6', JSON.stringify(historial));
+ if (typeof renderizarActividades === 'function') renderizarActividades();
+ if (typeof poblarFiltroPotreros === 'function') poblarFiltroPotreros();
+ };
 
  function cargarHistorial() {
  const guardado = localStorage.getItem('potreros_historial_v6');
@@ -2885,7 +2894,15 @@ function exportarTrabajador(id) {
 
 function guardarTrabajadoresRrhh() {
  localStorage.setItem('trabajadores_rrhh_v6', JSON.stringify(trabajadoresRrhh));
+ if (typeof window.guardarBlobRemoto === 'function') window.guardarBlobRemoto('rrhh', trabajadoresRrhh);
 }
+// Puente: el módulo Firebase aplica RRHH central
+window.aplicarRrhhRemoto = function(arr) {
+ if (!Array.isArray(arr)) return;
+ trabajadoresRrhh = arr;
+ localStorage.setItem('trabajadores_rrhh_v6', JSON.stringify(trabajadoresRrhh));
+ if (typeof renderizarTrabajadores === 'function') renderizarTrabajadores();
+};
 
 function cargarTrabajadoresRrhh() {
  const guardado = localStorage.getItem('trabajadores_rrhh_v6');
@@ -3466,7 +3483,18 @@ function cargarCaravanas() {
 function guardarCaravanas() {
  localStorage.setItem('caravanas_data_v6', JSON.stringify(caravanas));
  localStorage.setItem('grupos_manejo_v6', JSON.stringify(gruposManejo));
+ if (typeof window.guardarBlobRemoto === 'function') window.guardarBlobRemoto('caravanas', { caravanas, gruposManejo });
 }
+// Puente: el módulo Firebase aplica caravanas/eventos centrales
+window.aplicarCaravanasRemoto = function(blob) {
+ if (!blob || typeof blob !== 'object') return;
+ caravanas = blob.caravanas || {};
+ gruposManejo = blob.gruposManejo || {};
+ localStorage.setItem('caravanas_data_v6', JSON.stringify(caravanas));
+ localStorage.setItem('grupos_manejo_v6', JSON.stringify(gruposManejo));
+ if (typeof renderizarCaravanas === 'function') renderizarCaravanas();
+ if (typeof actualizarSelectoresPotreroCaravanas === 'function') actualizarSelectoresPotreroCaravanas();
+};
 
 function limpiarCaravanas() {
  if (!confirm('¿Limpiar todos los datos de caravanas y eventos de manejo?')) return;
@@ -4495,7 +4523,7 @@ function masivo_sacar() {
  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged }
  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
- import { getFirestore, doc, getDoc, collection, onSnapshot, writeBatch }
+ import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot, writeBatch, serverTimestamp }
  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
  const firebaseConfig = {
@@ -4530,13 +4558,39 @@ function masivo_sacar() {
  }
  };
 
- // Escucha cambios en tiempo real y los aplica a la app (servidor = fuente de verdad)
+ // Guarda un dataset completo como un único documento (caravanas, RRHH, historial)
+ window.guardarBlobRemoto = async function(clave, data) {
+ if (!window.usuarioActual) return;
+ try {
+ await setDoc(doc(db, 'datos_estancia', clave), {
+ json: JSON.stringify(data),
+ actualizado: serverTimestamp(),
+ por: window.usuarioActual
+ });
+ } catch(e) {
+ console.error('Error guardando "' + clave + '" en la base central:', e);
+ }
+ };
+
+ // Escucha un dataset-blob y lo aplica a la app
+ function syncBlob(clave, aplicar) {
+ onSnapshot(doc(db, 'datos_estancia', clave), snap => {
+ if (!snap.exists()) return;
+ try {
+ const data = JSON.parse(snap.data().json);
+ if (typeof aplicar === 'function') aplicar(data);
+ } catch(e) { console.error('Error aplicando "' + clave + '":', e); }
+ }, err => console.error('Error de sincronización de "' + clave + '":', err));
+ }
+
+ // Arranca toda la sincronización central (servidor = fuente de verdad)
  function iniciarSyncPotreros() {
  if (syncIniciado) return;
  syncIniciado = true;
+
+ // Potreros — un documento por potrero (edición concurrente segura por potrero)
  onSnapshot(collection(db, COL_POTREROS), snap => {
  if (snap.empty) {
- // Base vacía → sembrar con la estructura base local
  const base = window.obtenerPotreros ? window.obtenerPotreros() : [];
  if (base && base.length) window.guardarPotrerosRemoto(base);
  return;
@@ -4544,6 +4598,11 @@ function masivo_sacar() {
  const arr = snap.docs.map(d => d.data());
  if (window.aplicarPotrerosRemoto) window.aplicarPotrerosRemoto(arr);
  }, err => console.error('Error de sincronización de potreros:', err));
+
+ // Resto de datasets — un documento-blob por conjunto
+ syncBlob('caravanas', d => window.aplicarCaravanasRemoto && window.aplicarCaravanasRemoto(d));
+ syncBlob('rrhh',      d => window.aplicarRrhhRemoto && window.aplicarRrhhRemoto(d));
+ syncBlob('historial', d => window.aplicarHistorialRemoto && window.aplicarHistorialRemoto(d));
  }
 
  onAuthStateChanged(auth, async user => {
