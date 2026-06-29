@@ -2895,11 +2895,27 @@ const ADMIN_PIN_PLANO = '2810';
 
 // KMZ precargados desde /kmz/
 const KMZ_ARCHIVOS = [
- 'Australiano','Campo arriba','Costa','Feliciano','Laguna',
+ 'Australiano','Baño','Campo arriba','Canteras','Costa','Feliciano','Laguna',
  'Lecheras','Mako','Molino','Peppa',
  'Potrero1','Potrero2','Potrero3','Potrero4','Potrero5','Potrero6',
  'Pradera alegría','Pradera frente','PRV','Túnel'
 ];
+
+// Mapa de equivalencias: nombre interno del KMZ → nombre del potrero en la app
+const KMZ_ALIAS = {
+ 'australiano': 'australino',
+ 'costa': 'la costa',
+ 'pepa': 'peppa',
+ '1': 'potrero 1',
+ '2': 'potrero 2',
+ '3': 'potrero 3',
+ '4': 'potrero 4',
+ '5': 'potrero 5',
+ '6': 'potrero 6',
+ 'pradera alegria': 'pradera',
+ 'pradera frente': 'verdeo frente',
+ 'los cerros canteras': 'canteras',
+};
 
 function toggleAdminPlano() {
  if (esAdminPlano) {
@@ -3255,7 +3271,7 @@ function obtenerDatosPotrero(nombreKMZ) {
  .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
  .replace(/[._\-]/g, ' ')
  .replace(/\s+/g, ' ').trim();
- const objetivo = norm(nombreKMZ);
+ const objetivo = KMZ_ALIAS[norm(nombreKMZ)] || norm(nombreKMZ);
  let p = potreros.find(x => norm(x.nombre) === objetivo);
  if (!p) p = potreros.find(x => norm(x.nombre).replace(/ /g,'') === objetivo.replace(/ /g,''));
  if (!p) return { total: 0, detalle: '' };
