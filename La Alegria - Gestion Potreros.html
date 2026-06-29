@@ -2430,6 +2430,8 @@
 
  function guardarPotreros() {
  localStorage.setItem('potreros_data_v6', JSON.stringify(potreros));
+ // Sincronizar con la base central (si hay sesión y conexión)
+ if (typeof window.guardarPotrerosRemoto === 'function') window.guardarPotrerosRemoto(potreros);
  }
 
  // ===== MAPA DE CALOR =====
